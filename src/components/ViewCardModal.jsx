@@ -1,8 +1,8 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 import { QRCodeSVG } from "qrcode.react";
 
-import { X, Download, Share2, Link, Check } from "lucide-react";
+import { X, Download, Share2, Link, Check, Copy } from "lucide-react";
 
 import BusinessCard from "./BusinessCard";
 
@@ -15,34 +15,57 @@ import { createCardUrl } from "../utils/card";
 export default function ViewCardModal({ card, onClose }) {
   const qrRef = useRef(null);
 
+  const [copied, setCopied] = useState(false);
+
   if (!card) return null;
 
-  const cardUrl = createCardUrl(card);
-
   /* =========================================================
-     GET SAFE FILE NAME
+     CREATE SHORT USER NAME
+
+     Example:
+
+     Dipak Kondhalkar
+     ↓
+     dipakkondhalkar
      ========================================================= */
 
-  const getSafeName = () => {
+  const getShortName = () => {
     return (
-      card.fullName?.replace(/[^a-z0-9]/gi, "-").toLowerCase() ||
-      "business-card"
+      card.fullName
+        ?.trim()
+        .replace(/[^a-zA-Z0-9]/g, "")
+        .toLowerCase() || "businesscard"
     );
   };
 
   /* =========================================================
-     CREATE FINAL QR IMAGE
-     
-     This creates the SAME branded QR image that is
-     displayed on the screen.
+     CARD URL
 
-     It includes:
+     createCardUrl should return:
 
-     AARYANS GROUP
-     OF COMPANIES
-     www.aaryans.group
+     https://domain.com/card/dipakkondhalkar
+     ========================================================= */
 
-     inside the QR center.
+  const cardUrl = createCardUrl(card);
+
+  /* =========================================================
+     SAFE FILE NAME
+     ========================================================= */
+
+  const getSafeFileName = () => {
+    return (
+      card.fullName
+        ?.trim()
+        .replace(/[^a-zA-Z0-9]/g, "-")
+        .toLowerCase() || "business-card"
+    );
+  };
+
+  /* =========================================================
+     CREATE QR IMAGE
+
+     This creates the same branded QR image shown
+     on the screen.
      ========================================================= */
 
   const createQRImage = async () => {
@@ -78,7 +101,7 @@ export default function ViewCardModal({ card, onClose }) {
       });
 
       /* =====================================================
-         FINAL PNG SIZE
+         FINAL IMAGE SIZE
          ===================================================== */
 
       const size = 1000;
@@ -109,9 +132,7 @@ export default function ViewCardModal({ card, onClose }) {
       context.drawImage(image, 0, 0, size, size);
 
       /* =====================================================
-         CENTER COMPANY BRANDING
-
-         Same branding as displayed in QR.
+         CENTER BRANDING
          ===================================================== */
 
       const centerWidth = 400;
@@ -122,9 +143,7 @@ export default function ViewCardModal({ card, onClose }) {
 
       const centerY = (size - centerHeight) / 2;
 
-      /* =====================================================
-         WHITE CENTER BOX
-         ===================================================== */
+      /* White center box */
 
       context.fillStyle = "#ffffff";
 
@@ -187,13 +206,7 @@ export default function ViewCardModal({ card, onClose }) {
   };
 
   /* =========================================================
-     DOWNLOAD QR CODE
-     
-     Filename:
-     Person Name.png
-     
-     Example:
-     Dipak-Kondhalkar.png
+     DOWNLOAD QR
      ========================================================= */
 
   const handleDownloadQR = async () => {
@@ -206,7 +219,7 @@ export default function ViewCardModal({ card, onClose }) {
 
       link.href = url;
 
-      link.download = `${getSafeName()}.png`;
+      link.download = `${getSafeFileName()}.png`;
 
       document.body.appendChild(link);
 
@@ -217,28 +230,22 @@ export default function ViewCardModal({ card, onClose }) {
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error("QR download failed:", error);
-
-      alert("Unable to download QR code.");
     }
   };
 
   /* =========================================================
-     SHARE QR CODE
-     
-     Shares the EXACT SAME branded PNG.
+     SHARE QR
      ========================================================= */
 
   const handleShare = async () => {
     try {
       const pngBlob = await createQRImage();
 
-      const file = new File([pngBlob], `${getSafeName()}.png`, {
+      const file = new File([pngBlob], `${getSafeFileName()}.png`, {
         type: "image/png",
       });
 
-      /* =====================================================
-         NATIVE SHARE
-         ===================================================== */
+      /* Native share */
 
       if (
         navigator.share &&
@@ -258,9 +265,7 @@ export default function ViewCardModal({ card, onClose }) {
         return;
       }
 
-      /* =====================================================
-         FALLBACK DOWNLOAD
-         ===================================================== */
+      /* Fallback download */
 
       const url = URL.createObjectURL(pngBlob);
 
@@ -268,7 +273,7 @@ export default function ViewCardModal({ card, onClose }) {
 
       link.href = url;
 
-      link.download = `${getSafeName()}.png`;
+      link.download = `${getSafeFileName()}.png`;
 
       document.body.appendChild(link);
 
@@ -277,36 +282,36 @@ export default function ViewCardModal({ card, onClose }) {
       document.body.removeChild(link);
 
       URL.revokeObjectURL(url);
-
-      alert(
-        "This browser does not support direct QR sharing. The QR code has been downloaded.",
-      );
     } catch (error) {
-      /* User cancelled sharing */
-
       if (error?.name === "AbortError") {
         return;
       }
 
       console.error("QR sharing failed:", error);
-
-      alert("Unable to share QR code.");
     }
   };
 
   /* =========================================================
-     COPY CARD LINK
+     COPY SHORT CARD LINK
+
+     NO POPUP
+
+     Button changes:
+     Copy → Check
+     for 1.5 seconds.
      ========================================================= */
 
   const handleCopyLink = async () => {
     try {
       await navigator.clipboard.writeText(cardUrl);
 
-      alert("Card link copied successfully!");
+      setCopied(true);
+
+      setTimeout(() => {
+        setCopied(false);
+      }, 1500);
     } catch (error) {
       console.error("Copy failed:", error);
-
-      alert("Unable to copy the card link.");
     }
   };
 
@@ -346,7 +351,7 @@ export default function ViewCardModal({ card, onClose }) {
         "
       >
         {/* ===================================================
-            CLOSE BUTTON
+            CLOSE
             =================================================== */}
 
         <button
@@ -372,7 +377,6 @@ export default function ViewCardModal({ card, onClose }) {
             transition
             hover:bg-slate-100
             hover:text-slate-800
-            hover:shadow-md
             active:scale-95
           "
         >
@@ -472,9 +476,7 @@ export default function ViewCardModal({ card, onClose }) {
                 shadow-sm
               "
             >
-              {/* =================================================
-                  QR TITLE
-                  ================================================= */}
+              {/* QR TITLE */}
 
               <div
                 className="
@@ -533,10 +535,6 @@ export default function ViewCardModal({ card, onClose }) {
                     justify-center
                   "
                 >
-                  {/* ==========================================
-                      QR
-                      ========================================== */}
-
                   <QRCodeSVG
                     value={cardUrl}
                     size={245}
@@ -546,9 +544,7 @@ export default function ViewCardModal({ card, onClose }) {
                     fgColor="#601D1E"
                   />
 
-                  {/* ==========================================
-                      CENTER COMPANY BRANDING
-                      ========================================== */}
+                  {/* CENTER BRANDING */}
 
                   <div
                     className="
@@ -570,8 +566,6 @@ export default function ViewCardModal({ card, onClose }) {
                       shadow-sm
                     "
                   >
-                    {/* COMPANY NAME */}
-
                     <div
                       className="
                         text-[9px]
@@ -584,8 +578,6 @@ export default function ViewCardModal({ card, onClose }) {
                       AARYANS GROUP
                     </div>
 
-                    {/* COMPANY TYPE */}
-
                     <div
                       className="
                         mt-1
@@ -597,8 +589,6 @@ export default function ViewCardModal({ card, onClose }) {
                     >
                       OF COMPANIES
                     </div>
-
-                    {/* WEBSITE */}
 
                     <div
                       className="
@@ -616,7 +606,7 @@ export default function ViewCardModal({ card, onClose }) {
               </div>
 
               {/* =================================================
-                  QR DESCRIPTION
+                  DESCRIPTION
                   ================================================= */}
 
               <p
@@ -642,10 +632,6 @@ export default function ViewCardModal({ card, onClose }) {
                   gap-3
                 "
               >
-                {/* =============================================
-                    DOWNLOAD
-                    ============================================= */}
-
                 <button
                   type="button"
                   onClick={handleDownloadQR}
@@ -671,10 +657,6 @@ export default function ViewCardModal({ card, onClose }) {
                   <Download className="h-4 w-4" />
                   Download
                 </button>
-
-                {/* =============================================
-                    SHARE
-                    ============================================= */}
 
                 <button
                   type="button"
@@ -708,7 +690,7 @@ export default function ViewCardModal({ card, onClose }) {
                   CARD LINK
                   ================================================= */}
 
-              <div className="mt-4">
+              <div className="mt-5">
                 <div
                   className="
                     mb-2
@@ -725,6 +707,16 @@ export default function ViewCardModal({ card, onClose }) {
                     "
                   >
                     Card Link
+                  </span>
+
+                  <span
+                    className="
+                      text-[10px]
+                      font-medium
+                      text-slate-400
+                    "
+                  >
+                    {getShortName()}
                   </span>
                 </div>
 
@@ -746,30 +738,37 @@ export default function ViewCardModal({ card, onClose }) {
                       h-4
                       w-4
                       shrink-0
-                      text-slate-400
+                      text-[#601D1E]
                     "
                   />
+
+                  {/* SHORT LINK */}
 
                   <input
                     type="text"
                     value={cardUrl}
                     readOnly
+                    title={cardUrl}
                     className="
                       min-w-0
                       flex-1
                       bg-transparent
                       px-1
                       text-xs
-                      text-slate-600
+                      font-medium
+                      text-slate-700
                       outline-none
                     "
                   />
 
+                  {/* COPY BUTTON */}
+
                   <button
                     type="button"
                     onClick={handleCopyLink}
-                    title="Copy card link"
-                    className="
+                    title={copied ? "Copied" : "Copy card link"}
+                    aria-label={copied ? "Copied" : "Copy card link"}
+                    className={`
                       flex
                       h-9
                       w-9
@@ -777,15 +776,41 @@ export default function ViewCardModal({ card, onClose }) {
                       items-center
                       justify-center
                       rounded-lg
-                      bg-slate-100
-                      text-slate-600
-                      transition
-                      hover:bg-slate-200
-                      active:scale-95
-                    "
+                      transition-all
+                      active:scale-90
+                      ${
+                        copied
+                          ? "bg-green-100 text-green-600"
+                          : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                      }
+                    `}
                   >
-                    <Check className="h-4 w-4" />
+                    {copied ? (
+                      <Check
+                        className="
+                          h-4
+                          w-4
+                          animate-pulse
+                        "
+                      />
+                    ) : (
+                      <Copy className="h-4 w-4" />
+                    )}
                   </button>
+                </div>
+
+                {/* SHORT LINK PREVIEW */}
+
+                <div
+                  className="
+                    mt-2
+                    truncate
+                    text-center
+                    text-[10px]
+                    text-slate-400
+                  "
+                >
+                  /card/{getShortName()}
                 </div>
               </div>
             </div>

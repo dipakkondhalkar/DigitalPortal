@@ -6,8 +6,18 @@ import { downloadVCard } from "../utils/card";
 import { STORAGE_KEYS } from "../config";
 
 /* =========================================================
-   PUBLIC CARD PAGE  (opened when the QR code is scanned)
+   PUBLIC CARD PAGE
+   Supports:
+   /card/dipakkondhalkar
+   /card/old-card-id
    ========================================================= */
+
+const createNameSlug = (name) => {
+  return String(name || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "");
+};
 
 export default function PublicCardView() {
   const { id } = useParams();
@@ -20,62 +30,111 @@ export default function PublicCardView() {
     try {
       setLoading(true);
       setError("");
+      setCard(null);
+
+      /* =====================================================
+         1. CHECK QR DATA
+         ===================================================== */
 
       const params = new URLSearchParams(window.location.search);
       const encodedData = params.get("data");
 
-      // URLSearchParams.get() already decodes the value,
-      // so do NOT call decodeURIComponent() here.
       if (encodedData) {
         try {
           const qrCard = JSON.parse(encodedData);
 
-          if (qrCard && String(qrCard.id) === String(id)) {
-            setCard(qrCard);
-            setLoading(false);
-            return;
-          }
+          if (qrCard) {
+            const qrId = String(qrCard.id || "");
+            const qrNameSlug = createNameSlug(qrCard.fullName);
 
-          console.warn("QR card ID does not match route ID.");
+            /*
+              Accept either:
+
+              /card/original-id
+
+              OR
+
+              /card/dipakkondhalkar
+            */
+            if (
+              qrId === String(id) ||
+              qrNameSlug === String(id).toLowerCase()
+            ) {
+              setCard(qrCard);
+              setLoading(false);
+              return;
+            }
+
+            console.warn("QR card does not match the URL.");
+          }
         } catch (qrError) {
           console.error("QR data JSON error:", qrError);
         }
       }
 
-      // Same-device fallback for cards created before the new QR format.
+      /* =====================================================
+         2. CHECK LOCAL STORAGE
+         ===================================================== */
+
       try {
         const savedCards = localStorage.getItem(STORAGE_KEYS.cards);
 
         if (savedCards) {
           const localCards = JSON.parse(savedCards);
-          const localCard = localCards.find(
-            (item) => String(item.id) === String(id),
-          );
 
-          if (localCard) {
-            setCard(localCard);
-            setLoading(false);
-            return;
+          if (Array.isArray(localCards)) {
+            const requestedId = String(id || "").toLowerCase();
+
+            const localCard = localCards.find((item) => {
+              const originalId = String(item.id || "").toLowerCase();
+
+              const nameSlug = createNameSlug(item.fullName);
+
+              /*
+                Support both old and new URLs:
+
+                /card/1759738291234-abc123
+
+                /card/dipakkondhalkar
+              */
+              return originalId === requestedId || nameSlug === requestedId;
+            });
+
+            if (localCard) {
+              setCard(localCard);
+              setLoading(false);
+              return;
+            }
           }
         }
       } catch (storageError) {
         console.error("Local card read error:", storageError);
       }
 
+      /* =====================================================
+         3. CARD NOT FOUND
+         ===================================================== */
+
       setError("Card Not Found");
       setLoading(false);
     } catch (err) {
       console.error("Public card error:", err);
+
       setError("Card Not Found");
       setLoading(false);
     }
   }, [id]);
 
+  /* =========================================================
+     LOADING
+     ========================================================= */
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#f7f0e5] flex items-center justify-center px-5">
-        <div className="bg-white rounded-[35px] shadow-xl p-10 text-center max-w-xl w-full">
-          <div className="w-12 h-12 border-4 border-[#E2BA6E] border-t-[#5B1B20] rounded-full animate-spin mx-auto mb-5" />
+      <div className="flex min-h-screen items-center justify-center bg-[#f7f0e5] px-5">
+        <div className="w-full max-w-xl rounded-[35px] bg-white p-10 text-center shadow-xl">
+          <div className="mx-auto mb-5 h-12 w-12 animate-spin rounded-full border-4 border-[#E2BA6E] border-t-[#5B1B20]" />
+
           <h1 className="text-xl font-bold text-[#321b1e]">
             Loading Business Card...
           </h1>
@@ -84,27 +143,31 @@ export default function PublicCardView() {
     );
   }
 
+  /* =========================================================
+     CARD NOT FOUND
+     ========================================================= */
+
   if (error || !card) {
     return (
-      <div className="min-h-screen bg-[#f7f0e5] flex items-center justify-center px-5">
-        <div className="bg-white rounded-[35px] shadow-xl p-10 text-center max-w-xl w-full">
-          <div className="text-6xl mb-5">⚠️</div>
+      <div className="flex min-h-screen items-center justify-center bg-[#f7f0e5] px-5">
+        <div className="w-full max-w-xl rounded-[35px] bg-white p-10 text-center shadow-xl">
+          <div className="mb-5 text-6xl">⚠️</div>
 
-          <h1 className="text-3xl font-bold text-[#321b1e] mb-4">
+          <h1 className="mb-4 text-3xl font-bold text-[#321b1e]">
             Card Not Found
           </h1>
 
-          <p className="text-gray-500 text-lg">
+          <p className="text-lg text-gray-500">
             This QR code does not contain a valid business card.
           </p>
 
-          <p className="text-sm text-gray-400 mt-5">
+          <p className="mt-5 text-sm text-gray-400">
             Please create a new QR code from the latest deployed website.
           </p>
 
           <Link
             to="/"
-            className="inline-flex mt-6 px-6 py-3 rounded-xl bg-[#5B1B20] text-white font-bold"
+            className="mt-6 inline-flex rounded-xl bg-[#5B1B20] px-6 py-3 font-bold text-white transition hover:bg-[#431417]"
           >
             Back to Home
           </Link>
@@ -113,15 +176,20 @@ export default function PublicCardView() {
     );
   }
 
+  /* =========================================================
+     DISPLAY BUSINESS CARD
+     ========================================================= */
+
   return (
-    <div className="min-h-screen bg-[#f7f0e5] py-8 px-4">
-      <div className="max-w-xl mx-auto flex flex-col items-center">
+    <div className="min-h-screen bg-[#f7f0e5] px-4 py-8">
+      <div className="mx-auto flex max-w-xl flex-col items-center">
         <BusinessCard card={card} />
 
-        <div className="text-center mt-6">
+        <div className="mt-6 text-center">
           <button
+            type="button"
             onClick={() => downloadVCard(card)}
-            className="px-7 py-3 rounded-full bg-[#E2BA6E] text-[#5B1B20] font-bold shadow-lg hover:bg-[#d4a94f] transition"
+            className="rounded-full bg-[#E2BA6E] px-7 py-3 font-bold text-[#5B1B20] shadow-lg transition hover:bg-[#d4a94f]"
           >
             Save Contact
           </button>
