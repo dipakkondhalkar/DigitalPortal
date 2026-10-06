@@ -14,7 +14,6 @@ import { createCardUrl } from "../utils/card";
 
 export default function ViewCardModal({ card, onClose }) {
   const qrRef = useRef(null);
-
   const [copied, setCopied] = useState(false);
 
   if (!card) return null;
@@ -25,7 +24,7 @@ export default function ViewCardModal({ card, onClose }) {
      Example:
 
      Dipak Kondhalkar
-     ↓
+          ↓
      dipakkondhalkar
      ========================================================= */
 
@@ -39,14 +38,31 @@ export default function ViewCardModal({ card, onClose }) {
   };
 
   /* =========================================================
-     CARD URL
+     FULL CARD URL
 
-     createCardUrl should return:
+     Example:
 
-     https://domain.com/card/dipakkondhalkar
+     https://digital-portal-orcin.vercel.app/card/dipakkondhalkar
+
+     This is used internally for:
+     - QR code
+     - Copy button
      ========================================================= */
 
   const cardUrl = createCardUrl(card);
+
+  /* =========================================================
+     SHORT DISPLAY URL
+
+     This is what the user SEES in the Card Link box.
+
+     Example:
+
+     /card/dipakkondhalkar
+
+     ========================================================= */
+
+  const shortCardUrl = `/card/${getShortName()}`;
 
   /* =========================================================
      SAFE FILE NAME
@@ -63,9 +79,6 @@ export default function ViewCardModal({ card, onClose }) {
 
   /* =========================================================
      CREATE QR IMAGE
-
-     This creates the same branded QR image shown
-     on the screen.
      ========================================================= */
 
   const createQRImage = async () => {
@@ -136,11 +149,9 @@ export default function ViewCardModal({ card, onClose }) {
          ===================================================== */
 
       const centerWidth = 400;
-
       const centerHeight = 145;
 
       const centerX = (size - centerWidth) / 2;
-
       const centerY = (size - centerHeight) / 2;
 
       /* White center box */
@@ -158,7 +169,6 @@ export default function ViewCardModal({ card, onClose }) {
          ===================================================== */
 
       context.textAlign = "center";
-
       context.textBaseline = "middle";
 
       context.fillStyle = "#601D1E";
@@ -292,13 +302,15 @@ export default function ViewCardModal({ card, onClose }) {
   };
 
   /* =========================================================
-     COPY SHORT CARD LINK
+     COPY FULL CARD LINK
+
+     The screen shows:
+     /card/dipakkondhalkar
+
+     But the clipboard receives:
+     https://digital-portal-orcin.vercel.app/card/dipakkondhalkar
 
      NO POPUP
-
-     Button changes:
-     Copy → Check
-     for 1.5 seconds.
      ========================================================= */
 
   const handleCopyLink = async () => {
@@ -605,9 +617,7 @@ export default function ViewCardModal({ card, onClose }) {
                 </div>
               </div>
 
-              {/* =================================================
-                  DESCRIPTION
-                  ================================================= */}
+              {/* DESCRIPTION */}
 
               <p
                 className="
@@ -742,11 +752,22 @@ export default function ViewCardModal({ card, onClose }) {
                     "
                   />
 
-                  {/* SHORT LINK */}
+                  {/* =================================================
+                      IMPORTANT
+
+                      DISPLAY ONLY:
+
+                      /card/dipakkondhalkar
+
+                      NOT:
+
+                      https://digital-portal-orcin.vercel.app/card/...
+
+                      ================================================= */}
 
                   <input
                     type="text"
-                    value={cardUrl}
+                    value={shortCardUrl}
                     readOnly
                     title={cardUrl}
                     className="
@@ -799,7 +820,11 @@ export default function ViewCardModal({ card, onClose }) {
                   </button>
                 </div>
 
-                {/* SHORT LINK PREVIEW */}
+                {/* =================================================
+                    FULL URL IS NOT DISPLAYED HERE
+
+                    Only the short path is shown.
+                    ================================================= */}
 
                 <div
                   className="
@@ -810,7 +835,7 @@ export default function ViewCardModal({ card, onClose }) {
                     text-slate-400
                   "
                 >
-                  /card/{getShortName()}
+                  {shortCardUrl}
                 </div>
               </div>
             </div>
