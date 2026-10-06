@@ -5,7 +5,6 @@ import { createCardUrl, generateVCard } from "../utils/card";
 
 /* =========================================================
    QR POPUP
-   Simple and easy-to-scan QR code
    ========================================================= */
 
 export default function QRModal({ card, onClose }) {
@@ -92,7 +91,7 @@ export default function QRModal({ card, onClose }) {
         </p>
 
         {/* ===================================================
-            SIMPLE QR CODE
+            QR CODE
             =================================================== */}
 
         <div
@@ -110,12 +109,76 @@ export default function QRModal({ card, onClose }) {
             shadow-sm
           "
         >
-          <QRCodeSVG
-            value={cardUrl}
-            size={300}
-            level="M"
-            includeMargin={true}
-          />
+          <div className="relative">
+            {/* QR */}
+            <QRCodeSVG
+              value={cardUrl}
+              size={300}
+              level="H"
+              includeMargin={true}
+            />
+
+            {/* =================================================
+                CENTER COMPANY BRANDING
+                ================================================= */}
+
+            <div
+              className="
+                absolute
+                left-1/2
+                top-1/2
+                flex
+                w-[120px]
+                -translate-x-1/2
+                -translate-y-1/2
+                flex-col
+                items-center
+                justify-center
+                rounded-lg
+                bg-white
+                px-2
+                py-2
+                text-center
+                shadow-sm
+              "
+            >
+              <div
+                className="
+                  text-[9px]
+                  font-extrabold
+                  leading-tight
+                  tracking-wide
+                  text-[#601D1E]
+                "
+              >
+                AARYANS GROUP
+              </div>
+
+              <div
+                className="
+                  mt-1
+                  text-[7px]
+                  font-semibold
+                  leading-tight
+                  text-slate-600
+                "
+              >
+                OF COMPANIES
+              </div>
+
+              <div
+                className="
+                  mt-1
+                  text-[7px]
+                  font-medium
+                  leading-tight
+                  text-[#601D1E]
+                "
+              >
+                www.aaryans.group
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* ===================================================
@@ -123,7 +186,7 @@ export default function QRModal({ card, onClose }) {
             =================================================== */}
 
         <p className="mt-4 text-[11px] leading-5 text-slate-500">
-          Keep the QR code clear and do not cover any part of it.
+          Scan the QR code to view the digital business card.
         </p>
 
         {/* ===================================================
