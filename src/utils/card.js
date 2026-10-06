@@ -1,30 +1,39 @@
 import { COMPANY_NAME, COMPANY_WEBSITE } from "../config";
 
 /* =========================================================
-   CREATE PUBLIC QR URL
+   CREATE NAME SLUG
+   Example:
+   "Dipak Kondhalkar" -> "dipakkondhalkar"
+   "Rahul Sharma"     -> "rahulsharma"
+   ========================================================= */
+
+export function createNameSlug(name) {
+  return (
+    String(name || "")
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "") || "card"
+  );
+}
+
+/* =========================================================
+   CREATE PUBLIC CARD URL
+   Example:
+
+   https://digital-portal-orcin.vercel.app/card/dipakkondhalkar
+
+   NO:
+   ?data=...
+   NO timestamp
+   NO JSON
    ========================================================= */
 
 export function createCardUrl(card) {
-  const payload = {
-    id: card.id,
-    fullName: card.fullName || "",
-    title: card.title || "",
-    email: card.email || "",
-    phone: card.phone || "",
-    address: card.address || "",
-    company: card.company || COMPANY_NAME,
-    website: card.website || COMPANY_WEBSITE,
-  };
+  if (!card) return "";
 
-  const url = new URL(
-    `/card/${encodeURIComponent(card.id)}`,
-    window.location.origin,
-  );
+  const nameSlug = createNameSlug(card.fullName);
 
-  // Put the complete card inside the QR URL.
-  url.searchParams.set("data", JSON.stringify(payload));
-
-  return url.toString();
+  return new URL(`/card/${nameSlug}`, window.location.origin).toString();
 }
 
 /* =========================================================
@@ -38,7 +47,7 @@ export function generateVCard(card) {
 VERSION:3.0
 FN:${card.fullName || ""}
 TITLE:${card.title || ""}
-ORG:Aaryans Group of Companies
+ORG:${card.company || COMPANY_NAME}
 TEL;TYPE=CELL:${card.phone || ""}
 EMAIL:${card.email || ""}
 ADR;TYPE=WORK:;;${(card.address || "").replace(/\n/g, ", ")}
@@ -46,8 +55,13 @@ URL:https://www.aaryans.group
 END:VCARD`;
 }
 
-/* Download a .vcf file for a card */
+/* =========================================================
+   DOWNLOAD VCARD
+   ========================================================= */
+
 export function downloadVCard(card) {
+  if (!card) return;
+
   const vcard = generateVCard(card);
 
   const blob = new Blob([vcard], {
@@ -58,7 +72,8 @@ export function downloadVCard(card) {
   const link = document.createElement("a");
 
   link.href = url;
-  link.download = `${card.fullName || "business-card"}.vcf`;
+
+  link.download = `${createNameSlug(card.fullName)}.vcf`;
 
   document.body.appendChild(link);
   link.click();
@@ -67,7 +82,10 @@ export function downloadVCard(card) {
   URL.revokeObjectURL(url);
 }
 
-/* Build a new card object from form data */
+/* =========================================================
+   BUILD NEW CARD
+   ========================================================= */
+
 export function buildCard(formData) {
   const cleanName =
     formData.fullName
@@ -77,14 +95,30 @@ export function buildCard(formData) {
       .replace(/^-|-$/g, "") || "card";
 
   return {
+    /*
+      Internal ID.
+
+      This can still contain timestamp because it is used
+      internally by the application.
+
+      It is NOT shown in the public URL.
+    */
     id: `${cleanName}-${Date.now()}`,
+
     fullName: formData.fullName.trim(),
+
     title: formData.title.trim(),
+
     email: formData.email.trim(),
+
     phone: formData.phone.trim(),
+
     address: formData.address.trim(),
+
     company: COMPANY_NAME,
+
     website: COMPANY_WEBSITE,
+
     createdAt: new Date().toLocaleDateString("en-IN"),
   };
 }
