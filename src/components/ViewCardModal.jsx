@@ -1,12 +1,15 @@
 import { useRef } from "react";
+
 import { QRCodeSVG } from "qrcode.react";
+
 import { X, Download, Share2, Link, Check } from "lucide-react";
 
 import BusinessCard from "./BusinessCard";
+
 import { createCardUrl } from "../utils/card";
 
 /* =========================================================
-   VIEW (EYE) MODAL
+   VIEW CARD MODAL
    ========================================================= */
 
 export default function ViewCardModal({ card, onClose }) {
@@ -28,14 +31,31 @@ export default function ViewCardModal({ card, onClose }) {
   };
 
   /* =========================================================
-     CONVERT QR SVG → PNG
+     CREATE FINAL QR IMAGE
+     
+     This creates the SAME branded QR image that is
+     displayed on the screen.
+
+     It includes:
+
+     AARYANS GROUP
+     OF COMPANIES
+     www.aaryans.group
+
+     inside the QR center.
      ========================================================= */
 
   const createQRImage = async () => {
-    const svg = qrRef.current?.querySelector("svg");
+    const qrContainer = qrRef.current;
+
+    if (!qrContainer) {
+      throw new Error("QR code not found");
+    }
+
+    const svg = qrContainer.querySelector("svg");
 
     if (!svg) {
-      throw new Error("QR code not found");
+      throw new Error("QR SVG not found");
     }
 
     const serializer = new XMLSerializer();
@@ -57,9 +77,13 @@ export default function ViewCardModal({ card, onClose }) {
         image.src = svgUrl;
       });
 
-      const canvas = document.createElement("canvas");
+      /* =====================================================
+         FINAL PNG SIZE
+         ===================================================== */
 
-      const size = 800;
+      const size = 1000;
+
+      const canvas = document.createElement("canvas");
 
       canvas.width = size;
       canvas.height = size;
@@ -70,12 +94,83 @@ export default function ViewCardModal({ card, onClose }) {
         throw new Error("Canvas is not supported");
       }
 
-      /* White background */
+      /* =====================================================
+         WHITE BACKGROUND
+         ===================================================== */
+
       context.fillStyle = "#ffffff";
+
       context.fillRect(0, 0, size, size);
 
-      /* Draw QR */
+      /* =====================================================
+         DRAW QR
+         ===================================================== */
+
       context.drawImage(image, 0, 0, size, size);
+
+      /* =====================================================
+         CENTER COMPANY BRANDING
+
+         Same branding as displayed in QR.
+         ===================================================== */
+
+      const centerWidth = 400;
+
+      const centerHeight = 145;
+
+      const centerX = (size - centerWidth) / 2;
+
+      const centerY = (size - centerHeight) / 2;
+
+      /* =====================================================
+         WHITE CENTER BOX
+         ===================================================== */
+
+      context.fillStyle = "#ffffff";
+
+      context.beginPath();
+
+      context.roundRect(centerX, centerY, centerWidth, centerHeight, 25);
+
+      context.fill();
+
+      /* =====================================================
+         COMPANY NAME
+         ===================================================== */
+
+      context.textAlign = "center";
+
+      context.textBaseline = "middle";
+
+      context.fillStyle = "#601D1E";
+
+      context.font = "800 30px Arial, sans-serif";
+
+      context.fillText("AARYANS GROUP", size / 2, centerY + 38);
+
+      /* =====================================================
+         COMPANY TYPE
+         ===================================================== */
+
+      context.fillStyle = "#475569";
+
+      context.font = "600 22px Arial, sans-serif";
+
+      context.fillText("OF COMPANIES", size / 2, centerY + 73);
+
+      /* =====================================================
+         WEBSITE
+         ===================================================== */
+
+      context.fillStyle = "#601D1E";
+
+      context.font = "500 21px Arial, sans-serif";
+
+      context.fillText("www.aaryans.group", size / 2, centerY + 108);
+
+      /* =====================================================
+         CREATE PNG
+         ===================================================== */
 
       const pngBlob = await new Promise((resolve) => {
         canvas.toBlob(resolve, "image/png", 1);
@@ -93,6 +188,12 @@ export default function ViewCardModal({ card, onClose }) {
 
   /* =========================================================
      DOWNLOAD QR CODE
+     
+     Filename:
+     Person Name.png
+     
+     Example:
+     Dipak-Kondhalkar.png
      ========================================================= */
 
   const handleDownloadQR = async () => {
@@ -105,7 +206,7 @@ export default function ViewCardModal({ card, onClose }) {
 
       link.href = url;
 
-      link.download = `aaryans-qr-${getSafeName()}.png`;
+      link.download = `${getSafeName()}.png`;
 
       document.body.appendChild(link);
 
@@ -123,29 +224,20 @@ export default function ViewCardModal({ card, onClose }) {
 
   /* =========================================================
      SHARE QR CODE
+     
+     Shares the EXACT SAME branded PNG.
      ========================================================= */
 
   const handleShare = async () => {
     try {
       const pngBlob = await createQRImage();
 
-      const file = new File([pngBlob], `aaryans-qr-${getSafeName()}.png`, {
+      const file = new File([pngBlob], `${getSafeName()}.png`, {
         type: "image/png",
       });
 
       /* =====================================================
-         MOBILE / SUPPORTED BROWSERS
-
-         This opens the native share menu.
-
-         Example:
-         WhatsApp
-         Telegram
-         Gmail
-         Bluetooth
-         Google Drive
-         Nearby Share
-         etc.
+         NATIVE SHARE
          ===================================================== */
 
       if (
@@ -157,7 +249,9 @@ export default function ViewCardModal({ card, onClose }) {
       ) {
         await navigator.share({
           title: `${card.fullName || "Aaryans"} - QR Code`,
+
           text: `Digital business card for ${card.fullName || "Aaryans"}`,
+
           files: [file],
         });
 
@@ -165,9 +259,7 @@ export default function ViewCardModal({ card, onClose }) {
       }
 
       /* =====================================================
-         FALLBACK
-
-         If browser cannot share files, download QR.
+         FALLBACK DOWNLOAD
          ===================================================== */
 
       const url = URL.createObjectURL(pngBlob);
@@ -176,7 +268,7 @@ export default function ViewCardModal({ card, onClose }) {
 
       link.href = url;
 
-      link.download = `aaryans-qr-${getSafeName()}.png`;
+      link.download = `${getSafeName()}.png`;
 
       document.body.appendChild(link);
 
@@ -190,7 +282,8 @@ export default function ViewCardModal({ card, onClose }) {
         "This browser does not support direct QR sharing. The QR code has been downloaded.",
       );
     } catch (error) {
-      /* User cancelled share */
+      /* User cancelled sharing */
+
       if (error?.name === "AbortError") {
         return;
       }
@@ -217,8 +310,24 @@ export default function ViewCardModal({ card, onClose }) {
     }
   };
 
+  /* =========================================================
+     UI
+     ========================================================= */
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
+    <div
+      className="
+        fixed
+        inset-0
+        z-50
+        flex
+        items-center
+        justify-center
+        bg-black/70
+        p-4
+        backdrop-blur-sm
+      "
+    >
       {/* =====================================================
           MODAL
           ===================================================== */}
@@ -274,12 +383,33 @@ export default function ViewCardModal({ card, onClose }) {
             HEADER
             =================================================== */}
 
-        <div className="border-b border-slate-200 px-6 py-5 sm:px-8">
-          <h2 className="text-xl font-bold text-slate-800 sm:text-2xl">
+        <div
+          className="
+            border-b
+            border-slate-200
+            px-6
+            py-5
+            sm:px-8
+          "
+        >
+          <h2
+            className="
+              text-xl
+              font-bold
+              text-slate-800
+              sm:text-2xl
+            "
+          >
             Digital Card Preview
           </h2>
 
-          <p className="mt-1 text-sm text-slate-500">
+          <p
+            className="
+              mt-1
+              text-sm
+              text-slate-500
+            "
+          >
             Preview the card and share it using the QR code.
           </p>
         </div>
@@ -288,13 +418,32 @@ export default function ViewCardModal({ card, onClose }) {
             CONTENT
             =================================================== */}
 
-        <div className="grid gap-8 p-6 md:grid-cols-2 md:p-8">
+        <div
+          className="
+            grid
+            gap-8
+            p-6
+            md:grid-cols-2
+            md:p-8
+          "
+        >
           {/* =================================================
               BUSINESS CARD
               ================================================= */}
 
-          <div className="flex items-center justify-center">
-            <div className="w-full max-w-md">
+          <div
+            className="
+              flex
+              items-center
+              justify-center
+            "
+          >
+            <div
+              className="
+                w-full
+                max-w-md
+              "
+            >
               <BusinessCard card={card} />
             </div>
           </div>
@@ -303,16 +452,54 @@ export default function ViewCardModal({ card, onClose }) {
               QR SECTION
               ================================================= */}
 
-          <div className="flex flex-col items-center justify-center">
-            <div className="w-full max-w-sm rounded-3xl border border-slate-200 bg-slate-50 p-6 shadow-sm">
-              {/* QR TITLE */}
+          <div
+            className="
+              flex
+              flex-col
+              items-center
+              justify-center
+            "
+          >
+            <div
+              className="
+                w-full
+                max-w-sm
+                rounded-3xl
+                border
+                border-slate-200
+                bg-slate-50
+                p-6
+                shadow-sm
+              "
+            >
+              {/* =================================================
+                  QR TITLE
+                  ================================================= */}
 
-              <div className="mb-5 text-center">
-                <h3 className="text-lg font-bold text-slate-800">
+              <div
+                className="
+                  mb-5
+                  text-center
+                "
+              >
+                <h3
+                  className="
+                    text-lg
+                    font-bold
+                    text-slate-800
+                  "
+                >
                   Scan to View Card
                 </h3>
 
-                <p className="mt-1 text-xs leading-5 text-slate-500">
+                <p
+                  className="
+                    mt-1
+                    text-xs
+                    leading-5
+                    text-slate-500
+                  "
+                >
                   Scan this QR code with any phone to open the digital card.
                 </p>
               </div>
@@ -326,8 +513,8 @@ export default function ViewCardModal({ card, onClose }) {
                 className="
                   mx-auto
                   flex
-                  h-[230px]
-                  w-[230px]
+                  h-[270px]
+                  w-[270px]
                   items-center
                   justify-center
                   rounded-2xl
@@ -338,26 +525,126 @@ export default function ViewCardModal({ card, onClose }) {
                   shadow-sm
                 "
               >
-                <QRCodeSVG
-                  value={cardUrl}
-                  size={200}
-                  level="H"
-                  includeMargin
-                  bgColor="#ffffff"
-                  fgColor="#601D1E"
-                />
+                <div
+                  className="
+                    relative
+                    flex
+                    items-center
+                    justify-center
+                  "
+                >
+                  {/* ==========================================
+                      QR
+                      ========================================== */}
+
+                  <QRCodeSVG
+                    value={cardUrl}
+                    size={245}
+                    level="H"
+                    includeMargin={true}
+                    bgColor="#ffffff"
+                    fgColor="#601D1E"
+                  />
+
+                  {/* ==========================================
+                      CENTER COMPANY BRANDING
+                      ========================================== */}
+
+                  <div
+                    className="
+                      absolute
+                      left-1/2
+                      top-1/2
+                      flex
+                      w-[120px]
+                      -translate-x-1/2
+                      -translate-y-1/2
+                      flex-col
+                      items-center
+                      justify-center
+                      rounded-lg
+                      bg-white
+                      px-2
+                      py-2
+                      text-center
+                      shadow-sm
+                    "
+                  >
+                    {/* COMPANY NAME */}
+
+                    <div
+                      className="
+                        text-[9px]
+                        font-extrabold
+                        leading-tight
+                        tracking-wide
+                        text-[#601D1E]
+                      "
+                    >
+                      AARYANS GROUP
+                    </div>
+
+                    {/* COMPANY TYPE */}
+
+                    <div
+                      className="
+                        mt-1
+                        text-[7px]
+                        font-semibold
+                        leading-tight
+                        text-slate-600
+                      "
+                    >
+                      OF COMPANIES
+                    </div>
+
+                    {/* WEBSITE */}
+
+                    <div
+                      className="
+                        mt-1
+                        text-[7px]
+                        font-medium
+                        leading-tight
+                        text-[#601D1E]
+                      "
+                    >
+                      www.aaryans.group
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <p className="mt-4 text-center text-xs text-slate-500">
+              {/* =================================================
+                  QR DESCRIPTION
+                  ================================================= */}
+
+              <p
+                className="
+                  mt-4
+                  text-center
+                  text-xs
+                  text-slate-500
+                "
+              >
                 Download or share this QR code with anyone.
               </p>
 
               {/* =================================================
-                  ACTION BUTTONS
+                  DOWNLOAD + SHARE
                   ================================================= */}
 
-              <div className="mt-5 grid grid-cols-2 gap-3">
-                {/* DOWNLOAD */}
+              <div
+                className="
+                  mt-5
+                  grid
+                  grid-cols-2
+                  gap-3
+                "
+              >
+                {/* =============================================
+                    DOWNLOAD
+                    ============================================= */}
 
                 <button
                   type="button"
@@ -385,7 +672,9 @@ export default function ViewCardModal({ card, onClose }) {
                   Download
                 </button>
 
-                {/* SHARE */}
+                {/* =============================================
+                    SHARE
+                    ============================================= */}
 
                 <button
                   type="button"
@@ -420,14 +709,46 @@ export default function ViewCardModal({ card, onClose }) {
                   ================================================= */}
 
               <div className="mt-4">
-                <div className="mb-2 flex items-center justify-between">
-                  <span className="text-xs font-semibold text-slate-600">
+                <div
+                  className="
+                    mb-2
+                    flex
+                    items-center
+                    justify-between
+                  "
+                >
+                  <span
+                    className="
+                      text-xs
+                      font-semibold
+                      text-slate-600
+                    "
+                  >
                     Card Link
                   </span>
                 </div>
 
-                <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-2">
-                  <Link className="ml-2 h-4 w-4 shrink-0 text-slate-400" />
+                <div
+                  className="
+                    flex
+                    items-center
+                    gap-2
+                    rounded-xl
+                    border
+                    border-slate-200
+                    bg-white
+                    p-2
+                  "
+                >
+                  <Link
+                    className="
+                      ml-2
+                      h-4
+                      w-4
+                      shrink-0
+                      text-slate-400
+                    "
+                  />
 
                   <input
                     type="text"
