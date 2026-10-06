@@ -8,12 +8,12 @@ import aaryansLogo from "../assets/image.png";
 
 export default function AdminHeader({ onOpenCredentials, onLogout }) {
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-slate-200 bg-white shadow-sm">
-      <div className="flex min-h-[72px] items-center justify-between px-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-40 w-full bg-[#6B4226] text-white shadow-md">
+      <div className="flex min-h-[74px] items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* ================= LEFT SIDE ================= */}
         <div className="flex items-center gap-3">
           {/* Logo */}
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white p-1.5 shadow-sm ring-1 ring-slate-200">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white p-1.5 shadow-sm">
             <img
               src={aaryansLogo}
               alt="Aaryans"
@@ -23,14 +23,14 @@ export default function AdminHeader({ onOpenCredentials, onLogout }) {
 
           {/* Brand */}
           <div>
-            <h1 className="text-base font-bold tracking-tight text-slate-800 sm:text-lg">
+            <h1 className="text-base font-bold tracking-tight sm:text-lg">
               Aaryans Digital Portal
             </h1>
 
             <div className="mt-0.5 flex items-center gap-1.5">
-              <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
+              <ShieldCheck className="h-3.5 w-3.5 text-amber-200" />
 
-              <span className="text-[11px] font-medium text-slate-500 sm:text-xs">
+              <span className="text-[11px] font-medium text-amber-100 sm:text-xs">
                 Admin Dashboard
               </span>
             </div>
@@ -47,15 +47,14 @@ export default function AdminHeader({ onOpenCredentials, onLogout }) {
               group
               flex items-center gap-2
               rounded-xl
-              border border-slate-200
-              bg-white
+              border border-white/20
+              bg-white/10
               px-3 py-2
               text-xs font-semibold
-              text-slate-700
-              shadow-sm
+              text-white
+              backdrop-blur-sm
               transition-all duration-200
-              hover:border-slate-300
-              hover:bg-slate-50
+              hover:bg-white/20
               hover:shadow-md
               active:scale-95
             "
@@ -63,7 +62,7 @@ export default function AdminHeader({ onOpenCredentials, onLogout }) {
             <Settings
               className="
                 h-4 w-4
-                text-slate-500
+                text-amber-100
                 transition-transform duration-300
                 group-hover:rotate-90
               "
@@ -80,13 +79,13 @@ export default function AdminHeader({ onOpenCredentials, onLogout }) {
               group
               flex items-center gap-2
               rounded-xl
-              bg-[#5B1B20]
+              bg-[#3F2415]
               px-3 py-2
               text-xs font-semibold
               text-white
               shadow-sm
               transition-all duration-200
-              hover:bg-[#48151A]
+              hover:bg-[#321B10]
               hover:shadow-md
               active:scale-95
             "
