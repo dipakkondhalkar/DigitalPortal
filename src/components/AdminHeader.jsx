@@ -1,4 +1,4 @@
-import { LogOut, Settings, ShieldCheck } from "lucide-react";
+import { LogOut, Settings } from "lucide-react";
 
 import aaryansLogo from "../assets/image.png";
 
@@ -9,27 +9,23 @@ import aaryansLogo from "../assets/image.png";
 export default function AdminHeader({ onOpenCredentials, onLogout }) {
   return (
     <header className="sticky top-0 z-40 w-full bg-[#601D1E] text-white shadow-md">
-      <div className="flex min-h-[74px] items-center justify-between px-4 sm:px-6 lg:px-8">
+      <div className="flex min-h-[80px] items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* ================= LEFT SIDE ================= */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           {/* Logo */}
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white p-1.5 shadow-sm">
+          <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-white p-1.5 shadow-sm">
             <img
               src={aaryansLogo}
               alt="Aaryans"
-              className="max-h-full max-w-full object-contain"
+              className="h-full w-full object-contain"
             />
           </div>
 
           {/* Brand */}
           <div>
-            <h1 className="text-base font-bold tracking-tight sm:text-lg">
+            <h1 className="text-lg font-bold tracking-tight sm:text-xl">
               Aaryans Digital Portal
             </h1>
-
-            <div className="mt-0.5 flex items-center gap-1.5">
-              <ShieldCheck className="h-3.5 w-3.5 text-[#F3D6B3]" />
-            </div>
           </div>
         </div>
 
@@ -45,7 +41,7 @@ export default function AdminHeader({ onOpenCredentials, onLogout }) {
               rounded-xl
               border border-white/20
               bg-white/10
-              px-3 py-2
+              px-3 py-2.5
               text-xs font-semibold
               text-white
               backdrop-blur-sm
@@ -76,7 +72,7 @@ export default function AdminHeader({ onOpenCredentials, onLogout }) {
               flex items-center gap-2
               rounded-xl
               bg-[#431415]
-              px-3 py-2
+              px-3 py-2.5
               text-xs font-semibold
               text-white
               shadow-sm
