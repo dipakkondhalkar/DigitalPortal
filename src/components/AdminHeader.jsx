@@ -13,9 +13,6 @@ export default function AdminHeader({ onOpenCredentials, onLogout }) {
         <img src={aaryansLogo} alt="Aaryans" className="h-10" />
         <div>
           <div className="flex items-center gap-2">
-            <span className="bg-[#E2BA6E] text-black text-[10px] font-black px-2 py-1 rounded">
-              ADMIN
-            </span>
             <h1 className="font-bold">Aaryans Digital Portal</h1>
           </div>
         </div>
