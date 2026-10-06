@@ -15,8 +15,6 @@ export default function QRModal({ card, onClose }) {
 
   /* =========================================================
      OLD WORKING QR URL
-     Keeps:
-     /card/card-id?data=FULL_CARD_DATA
      ========================================================= */
 
   const cardUrl = createCardUrl(card);
@@ -54,7 +52,7 @@ export default function QRModal({ card, onClose }) {
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, size, size);
 
-        /* Draw QR */
+        /* QR */
         ctx.drawImage(img, 0, 0, size, size);
 
         const pngUrl = canvas.toDataURL("image/png");
@@ -65,9 +63,7 @@ export default function QRModal({ card, onClose }) {
         link.download = `${card.fullName || "business-card"}-QR.png`;
 
         document.body.appendChild(link);
-
         link.click();
-
         document.body.removeChild(link);
 
         URL.revokeObjectURL(url);
@@ -80,7 +76,7 @@ export default function QRModal({ card, onClose }) {
   };
 
   /* =========================================================
-     SHARE QR CODE
+     SHARE QR
      ========================================================= */
 
   const handleShareQR = async () => {
@@ -95,10 +91,9 @@ export default function QRModal({ card, onClose }) {
         return;
       }
 
-      /* Fallback: copy URL */
       await navigator.clipboard.writeText(cardUrl);
 
-      console.log("QR card link copied.");
+      console.log("Card link copied.");
     } catch (error) {
       console.error("QR share failed:", error);
     }
@@ -114,8 +109,7 @@ export default function QRModal({ card, onClose }) {
         items-center
         justify-center
         bg-black/70
-        p-4
-        overflow-y-auto
+        p-3
         backdrop-blur-sm
       "
     >
@@ -126,40 +120,42 @@ export default function QRModal({ card, onClose }) {
       <div
         className="
           relative
-          my-6
           w-full
-          max-w-md
-          overflow-hidden
-          rounded-[28px]
+          max-w-[390px]
+          max-h-[calc(100vh-24px)]
+          overflow-y-auto
+          rounded-[26px]
           bg-white
           shadow-2xl
         "
       >
         {/* ===================================================
-            TOP HEADER
+            HEADER
             =================================================== */}
 
         <div
           className="
+            relative
             bg-[#601D1E]
-            px-6
-            pb-7
-            pt-7
+            px-5
+            pb-5
+            pt-5
             text-white
           "
         >
           {/* CLOSE */}
+
           <button
             type="button"
             onClick={onClose}
             aria-label="Close"
             className="
               absolute
-              right-4
-              top-4
+              right-3
+              top-3
               flex
-              h-9
-              w-9
+              h-8
+              w-8
               items-center
               justify-center
               rounded-full
@@ -170,35 +166,33 @@ export default function QRModal({ card, onClose }) {
               active:scale-95
             "
           >
-            <X className="h-5 w-5" />
+            <X className="h-4 w-4" />
           </button>
 
-          {/* SUCCESS ICON */}
+          {/* SUCCESS */}
 
           <div
             className="
               mx-auto
-              mb-4
+              mb-2.5
               flex
-              h-14
-              w-14
+              h-11
+              w-11
               items-center
               justify-center
-              rounded-2xl
+              rounded-xl
               bg-white
               text-[#601D1E]
-              shadow-lg
+              shadow-md
             "
           >
-            <Check className="h-8 w-8" strokeWidth={3} />
+            <Check className="h-6 w-6" strokeWidth={3} />
           </div>
 
-          {/* TITLE */}
+          <h3 className="text-center text-lg font-bold">QR Code Generated</h3>
 
-          <h3 className="text-center text-2xl font-bold">QR Code Generated</h3>
-
-          <p className="mx-auto mt-2 max-w-xs text-center text-xs leading-5 text-white/75">
-            Your digital business card is ready to share.
+          <p className="mt-1 text-center text-[10px] text-white/75">
+            Your digital business card is ready
           </p>
         </div>
 
@@ -206,19 +200,19 @@ export default function QRModal({ card, onClose }) {
             CONTENT
             =================================================== */}
 
-        <div className="px-5 pb-6 pt-5 sm:px-7">
-          {/* CARD NAME */}
+        <div className="px-5 pb-5 pt-4">
+          {/* NAME */}
 
-          <div className="mb-5 text-center">
+          <div className="mb-3 text-center">
             <p className="text-sm font-bold text-slate-800">{card.fullName}</p>
 
             {card.title && (
-              <p className="mt-1 text-xs text-slate-500">{card.title}</p>
+              <p className="mt-0.5 text-[10px] text-slate-500">{card.title}</p>
             )}
           </div>
 
           {/* =================================================
-              SQUARE QR AREA
+              COMPACT SQUARE QR
               ================================================= */}
 
           <div
@@ -226,12 +220,12 @@ export default function QRModal({ card, onClose }) {
               mx-auto
               aspect-square
               w-full
-              max-w-[330px]
-              rounded-[28px]
+              max-w-[250px]
+              rounded-[22px]
               border
               border-slate-200
               bg-slate-50
-              p-4
+              p-3
               shadow-inner
             "
           >
@@ -245,17 +239,17 @@ export default function QRModal({ card, onClose }) {
                 items-center
                 justify-center
                 overflow-hidden
-                rounded-[22px]
+                rounded-[16px]
                 bg-white
-                p-3
-                shadow-md
+                p-2
+                shadow-sm
               "
             >
               {/* QR */}
 
               <QRCodeSVG
                 value={cardUrl}
-                size={275}
+                size={220}
                 level="H"
                 includeMargin={true}
                 fgColor="#601D1E"
@@ -273,25 +267,23 @@ export default function QRModal({ card, onClose }) {
                   left-1/2
                   top-1/2
                   flex
-                  w-[112px]
+                  w-[82px]
                   -translate-x-1/2
                   -translate-y-1/2
                   flex-col
                   items-center
                   justify-center
-                  rounded-xl
-                  border
-                  border-slate-100
+                  rounded-lg
                   bg-white
-                  px-2
-                  py-2.5
+                  px-1.5
+                  py-1.5
                   text-center
-                  shadow-md
+                  shadow-sm
                 "
               >
                 <div
                   className="
-                    text-[9px]
+                    text-[7px]
                     font-extrabold
                     leading-tight
                     tracking-wide
@@ -303,8 +295,8 @@ export default function QRModal({ card, onClose }) {
 
                 <div
                   className="
-                    mt-1
-                    text-[7px]
+                    mt-0.5
+                    text-[5.5px]
                     font-semibold
                     leading-tight
                     text-slate-600
@@ -315,8 +307,8 @@ export default function QRModal({ card, onClose }) {
 
                 <div
                   className="
-                    mt-1
-                    text-[6px]
+                    mt-0.5
+                    text-[5px]
                     font-medium
                     leading-tight
                     text-[#601D1E]
@@ -335,32 +327,31 @@ export default function QRModal({ card, onClose }) {
           <div
             className="
               mx-auto
-              mt-4
+              mt-3
               flex
-              max-w-[330px]
+              max-w-[250px]
               items-center
               justify-center
-              gap-2
-              rounded-xl
+              gap-1.5
+              rounded-lg
               bg-[#f7f0e5]
-              px-4
-              py-3
-              text-center
+              px-3
+              py-2
             "
           >
-            <Smartphone className="h-4 w-4 shrink-0 text-[#601D1E]" />
+            <Smartphone className="h-3.5 w-3.5 text-[#601D1E]" />
 
-            <p className="text-[11px] font-medium leading-4 text-[#601D1E]">
-              Scan this QR code with any phone to open the digital card.
+            <p className="text-[9px] font-medium text-[#601D1E]">
+              Scan with any phone to open the card
             </p>
           </div>
 
           {/* =================================================
-              QR ACTION BUTTONS
+              DOWNLOAD + SHARE
               ================================================= */}
 
-          <div className="mt-5 grid grid-cols-2 gap-3">
-            {/* DOWNLOAD QR */}
+          <div className="mt-3 grid grid-cols-2 gap-2.5">
+            {/* DOWNLOAD */}
 
             <button
               type="button"
@@ -369,29 +360,24 @@ export default function QRModal({ card, onClose }) {
                 flex
                 items-center
                 justify-center
-                gap-2
+                gap-1.5
                 rounded-xl
-                border
-                border-[#601D1E]
                 bg-[#601D1E]
-                px-4
-                py-3
-                text-xs
+                py-2.5
+                text-[10px]
                 font-bold
                 text-white
                 shadow-md
-                transition-all
-                duration-200
+                transition
                 hover:bg-[#732328]
-                hover:shadow-lg
                 active:scale-[0.97]
               "
             >
-              <Download className="h-4 w-4" />
+              <Download className="h-3.5 w-3.5" />
               Download QR
             </button>
 
-            {/* SHARE QR */}
+            {/* SHARE */}
 
             <button
               type="button"
@@ -400,25 +386,20 @@ export default function QRModal({ card, onClose }) {
                 flex
                 items-center
                 justify-center
-                gap-2
+                gap-1.5
                 rounded-xl
-                border
-                border-[#E2BA6E]
                 bg-[#E2BA6E]
-                px-4
-                py-3
-                text-xs
+                py-2.5
+                text-[10px]
                 font-bold
                 text-[#5B1B20]
                 shadow-md
-                transition-all
-                duration-200
+                transition
                 hover:bg-[#d4a94f]
-                hover:shadow-lg
                 active:scale-[0.97]
               "
             >
-              <Share2 className="h-4 w-4" />
+              <Share2 className="h-3.5 w-3.5" />
               Share QR
             </button>
           </div>
@@ -433,68 +414,29 @@ export default function QRModal({ card, onClose }) {
             )}`}
             download={`${card.fullName || "contact"}.vcf`}
             className="
-              mt-3
+              mt-2.5
               flex
               w-full
               items-center
               justify-center
-              gap-2
+              gap-1.5
               rounded-xl
               border
               border-slate-200
               bg-white
-              py-3
-              text-xs
+              py-2.5
+              text-[10px]
               font-bold
               text-slate-700
               shadow-sm
               transition
               hover:bg-slate-50
-              hover:shadow-md
               active:scale-[0.98]
             "
           >
-            <Download className="h-4 w-4 text-[#601D1E]" />
+            <Download className="h-3.5 w-3.5 text-[#601D1E]" />
             Save Contact
           </a>
-
-          {/* =================================================
-              CARD LINK
-              ================================================= */}
-
-          <div className="mt-5">
-            <label className="mb-2 block text-[10px] font-bold uppercase tracking-wider text-slate-400">
-              Digital Card Link
-            </label>
-
-            <div
-              className="
-                flex
-                items-center
-                gap-2
-                rounded-xl
-                border
-                border-slate-200
-                bg-slate-50
-                px-3
-                py-2.5
-              "
-            >
-              <input
-                type="text"
-                readOnly
-                value={cardUrl}
-                className="
-                  min-w-0
-                  flex-1
-                  bg-transparent
-                  text-[10px]
-                  text-slate-500
-                  outline-none
-                "
-              />
-            </div>
-          </div>
 
           {/* =================================================
               CLOSE
@@ -504,12 +446,12 @@ export default function QRModal({ card, onClose }) {
             type="button"
             onClick={onClose}
             className="
-              mt-3
+              mt-2
               w-full
               rounded-xl
               bg-slate-100
-              py-3
-              text-xs
+              py-2.5
+              text-[10px]
               font-bold
               text-slate-700
               transition
