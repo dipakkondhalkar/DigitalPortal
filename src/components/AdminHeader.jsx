@@ -29,10 +29,6 @@ export default function AdminHeader({ onOpenCredentials, onLogout }) {
 
             <div className="mt-0.5 flex items-center gap-1.5">
               <ShieldCheck className="h-3.5 w-3.5 text-[#F3D6B3]" />
-
-              <span className="text-[11px] font-medium text-[#F3D6B3] sm:text-xs">
-                Admin Dashboard
-              </span>
             </div>
           </div>
         </div>
