@@ -8,7 +8,7 @@ import aaryansLogo from "../assets/image.png";
 
 export default function AdminHeader({ onOpenCredentials, onLogout }) {
   return (
-    <header className="sticky top-0 z-40 w-full bg-[#6B4226] text-white shadow-md">
+    <header className="sticky top-0 z-40 w-full bg-[#601D1E] text-white shadow-md">
       <div className="flex min-h-[74px] items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* ================= LEFT SIDE ================= */}
         <div className="flex items-center gap-3">
@@ -28,9 +28,9 @@ export default function AdminHeader({ onOpenCredentials, onLogout }) {
             </h1>
 
             <div className="mt-0.5 flex items-center gap-1.5">
-              <ShieldCheck className="h-3.5 w-3.5 text-amber-200" />
+              <ShieldCheck className="h-3.5 w-3.5 text-[#F3D6B3]" />
 
-              <span className="text-[11px] font-medium text-amber-100 sm:text-xs">
+              <span className="text-[11px] font-medium text-[#F3D6B3] sm:text-xs">
                 Admin Dashboard
               </span>
             </div>
@@ -62,7 +62,7 @@ export default function AdminHeader({ onOpenCredentials, onLogout }) {
             <Settings
               className="
                 h-4 w-4
-                text-amber-100
+                text-[#F3D6B3]
                 transition-transform duration-300
                 group-hover:rotate-90
               "
@@ -79,13 +79,13 @@ export default function AdminHeader({ onOpenCredentials, onLogout }) {
               group
               flex items-center gap-2
               rounded-xl
-              bg-[#3F2415]
+              bg-[#431415]
               px-3 py-2
               text-xs font-semibold
               text-white
               shadow-sm
               transition-all duration-200
-              hover:bg-[#321B10]
+              hover:bg-[#321011]
               hover:shadow-md
               active:scale-95
             "
