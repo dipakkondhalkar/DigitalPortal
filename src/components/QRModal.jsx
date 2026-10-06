@@ -52,7 +52,7 @@ export default function QRModal({ card, onClose }) {
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, size, size);
 
-        /* QR */
+        /* Draw QR */
         ctx.drawImage(img, 0, 0, size, size);
 
         const pngUrl = canvas.toDataURL("image/png");
@@ -63,7 +63,9 @@ export default function QRModal({ card, onClose }) {
         link.download = `${card.fullName || "business-card"}-QR.png`;
 
         document.body.appendChild(link);
+
         link.click();
+
         document.body.removeChild(link);
 
         URL.revokeObjectURL(url);
@@ -90,6 +92,8 @@ export default function QRModal({ card, onClose }) {
 
         return;
       }
+
+      /* Fallback */
 
       await navigator.clipboard.writeText(cardUrl);
 
@@ -127,6 +131,7 @@ export default function QRModal({ card, onClose }) {
           rounded-[26px]
           bg-white
           shadow-2xl
+          scrollbar-hide
         "
       >
         {/* ===================================================
@@ -143,7 +148,7 @@ export default function QRModal({ card, onClose }) {
             text-white
           "
         >
-          {/* CLOSE */}
+          {/* CLOSE BUTTON */}
 
           <button
             type="button"
@@ -169,7 +174,7 @@ export default function QRModal({ card, onClose }) {
             <X className="h-4 w-4" />
           </button>
 
-          {/* SUCCESS */}
+          {/* SUCCESS ICON */}
 
           <div
             className="
@@ -189,6 +194,8 @@ export default function QRModal({ card, onClose }) {
             <Check className="h-6 w-6" strokeWidth={3} />
           </div>
 
+          {/* TITLE */}
+
           <h3 className="text-center text-lg font-bold">QR Code Generated</h3>
 
           <p className="mt-1 text-center text-[10px] text-white/75">
@@ -201,7 +208,9 @@ export default function QRModal({ card, onClose }) {
             =================================================== */}
 
         <div className="px-5 pb-5 pt-4">
-          {/* NAME */}
+          {/* =================================================
+              PERSON NAME
+              ================================================= */}
 
           <div className="mb-3 text-center">
             <p className="text-sm font-bold text-slate-800">{card.fullName}</p>
@@ -212,7 +221,7 @@ export default function QRModal({ card, onClose }) {
           </div>
 
           {/* =================================================
-              COMPACT SQUARE QR
+              SQUARE QR AREA
               ================================================= */}
 
           <div
@@ -245,7 +254,7 @@ export default function QRModal({ card, onClose }) {
                 shadow-sm
               "
             >
-              {/* QR */}
+              {/* QR CODE */}
 
               <QRCodeSVG
                 value={cardUrl}
@@ -258,7 +267,7 @@ export default function QRModal({ card, onClose }) {
               />
 
               {/* =================================================
-                  CENTER BRANDING
+                  CENTER AARYANS BRANDING
                   ================================================= */}
 
               <div
@@ -351,7 +360,7 @@ export default function QRModal({ card, onClose }) {
               ================================================= */}
 
           <div className="mt-3 grid grid-cols-2 gap-2.5">
-            {/* DOWNLOAD */}
+            {/* DOWNLOAD QR */}
 
             <button
               type="button"
@@ -377,7 +386,7 @@ export default function QRModal({ card, onClose }) {
               Download QR
             </button>
 
-            {/* SHARE */}
+            {/* SHARE QR */}
 
             <button
               type="button"
