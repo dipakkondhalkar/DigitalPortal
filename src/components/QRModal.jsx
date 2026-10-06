@@ -5,11 +5,13 @@ import { createCardUrl, generateVCard } from "../utils/card";
 
 /* =========================================================
    QR POPUP
-   Simple QR code for easy scanning
+   Simple and easy-to-scan QR code
    ========================================================= */
 
 export default function QRModal({ card, onClose }) {
   if (!card) return null;
+
+  const cardUrl = createCardUrl(card);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 overflow-y-auto">
@@ -17,7 +19,19 @@ export default function QRModal({ card, onClose }) {
           MODAL
           ===================================================== */}
 
-      <div className="relative my-8 w-full max-w-sm rounded-3xl bg-white p-7 text-center shadow-2xl">
+      <div
+        className="
+          relative
+          my-8
+          w-full
+          max-w-sm
+          rounded-3xl
+          bg-white
+          p-7
+          text-center
+          shadow-2xl
+        "
+      >
         {/* ===================================================
             CLOSE BUTTON
             =================================================== */}
@@ -50,7 +64,20 @@ export default function QRModal({ card, onClose }) {
             SUCCESS ICON
             =================================================== */}
 
-        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-green-100 text-green-600">
+        <div
+          className="
+            mx-auto
+            mb-4
+            flex
+            h-14
+            w-14
+            items-center
+            justify-center
+            rounded-2xl
+            bg-green-100
+            text-green-600
+          "
+        >
           <Check className="h-8 w-8" />
         </div>
 
@@ -79,17 +106,15 @@ export default function QRModal({ card, onClose }) {
             border
             border-slate-200
             bg-white
-            p-4
+            p-5
             shadow-sm
           "
         >
           <QRCodeSVG
-            value={createCardUrl(card)}
-            size={260}
+            value={cardUrl}
+            size={300}
             level="M"
             includeMargin={true}
-            bgColor="#FFFFFF"
-            fgColor="#000000"
           />
         </div>
 
@@ -98,7 +123,7 @@ export default function QRModal({ card, onClose }) {
             =================================================== */}
 
         <p className="mt-4 text-[11px] leading-5 text-slate-500">
-          Keep the QR code clear and avoid covering any part of it.
+          Keep the QR code clear and do not cover any part of it.
         </p>
 
         {/* ===================================================
@@ -128,7 +153,7 @@ export default function QRModal({ card, onClose }) {
             active:scale-[0.98]
           "
         >
-          <Download className="h-4 w-4 text-[#5B1B20]" />
+          <Download className="h-4 w-4" />
           Save Contact
         </a>
 
