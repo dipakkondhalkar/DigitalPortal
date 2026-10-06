@@ -14,55 +14,25 @@ import { createCardUrl } from "../utils/card";
 
 export default function ViewCardModal({ card, onClose }) {
   const qrRef = useRef(null);
+
   const [copied, setCopied] = useState(false);
 
   if (!card) return null;
 
   /* =========================================================
-     CREATE SHORT USER NAME
+     CARD URL
+
+     This is the ORIGINAL WORKING URL.
 
      Example:
 
-     Dipak Kondhalkar
-          ↓
-     dipakkondhalkar
-     ========================================================= */
+     https://digital-portal-orcin.vercel.app/card/
+     sdfgsdf-1791317604468?data=....
 
-  const getShortName = () => {
-    return (
-      card.fullName
-        ?.trim()
-        .replace(/[^a-zA-Z0-9]/g, "")
-        .toLowerCase() || "businesscard"
-    );
-  };
-
-  /* =========================================================
-     FULL CARD URL
-
-     Example:
-
-     https://digital-portal-orcin.vercel.app/card/dipakkondhalkar
-
-     This is used internally for:
-     - QR code
-     - Copy button
+     The complete card data is stored inside ?data=
      ========================================================= */
 
   const cardUrl = createCardUrl(card);
-
-  /* =========================================================
-     SHORT DISPLAY URL
-
-     This is what the user SEES in the Card Link box.
-
-     Example:
-
-     /card/dipakkondhalkar
-
-     ========================================================= */
-
-  const shortCardUrl = `/card/${getShortName()}`;
 
   /* =========================================================
      SAFE FILE NAME
@@ -109,7 +79,9 @@ export default function ViewCardModal({ card, onClose }) {
 
       await new Promise((resolve, reject) => {
         image.onload = resolve;
+
         image.onerror = reject;
+
         image.src = svgUrl;
       });
 
@@ -122,6 +94,7 @@ export default function ViewCardModal({ card, onClose }) {
       const canvas = document.createElement("canvas");
 
       canvas.width = size;
+
       canvas.height = size;
 
       const context = canvas.getContext("2d");
@@ -149,12 +122,12 @@ export default function ViewCardModal({ card, onClose }) {
          ===================================================== */
 
       const centerWidth = 400;
+
       const centerHeight = 145;
 
       const centerX = (size - centerWidth) / 2;
-      const centerY = (size - centerHeight) / 2;
 
-      /* White center box */
+      const centerY = (size - centerHeight) / 2;
 
       context.fillStyle = "#ffffff";
 
@@ -169,6 +142,7 @@ export default function ViewCardModal({ card, onClose }) {
          ===================================================== */
 
       context.textAlign = "center";
+
       context.textBaseline = "middle";
 
       context.fillStyle = "#601D1E";
@@ -255,8 +229,6 @@ export default function ViewCardModal({ card, onClose }) {
         type: "image/png",
       });
 
-      /* Native share */
-
       if (
         navigator.share &&
         navigator.canShare &&
@@ -275,7 +247,9 @@ export default function ViewCardModal({ card, onClose }) {
         return;
       }
 
-      /* Fallback download */
+      /* =====================================================
+         FALLBACK DOWNLOAD
+         ===================================================== */
 
       const url = URL.createObjectURL(pngBlob);
 
@@ -302,15 +276,13 @@ export default function ViewCardModal({ card, onClose }) {
   };
 
   /* =========================================================
-     COPY FULL CARD LINK
+     COPY CARD LINK
 
-     The screen shows:
-     /card/dipakkondhalkar
+     Copies the COMPLETE old URL.
 
-     But the clipboard receives:
-     https://digital-portal-orcin.vercel.app/card/dipakkondhalkar
+     No popup.
 
-     NO POPUP
+     Copy icon → Check icon → back to Copy.
      ========================================================= */
 
   const handleCopyLink = async () => {
@@ -362,9 +334,7 @@ export default function ViewCardModal({ card, onClose }) {
           shadow-2xl
         "
       >
-        {/* ===================================================
-            CLOSE
-            =================================================== */}
+        {/* CLOSE */}
 
         <button
           type="button"
@@ -395,9 +365,7 @@ export default function ViewCardModal({ card, onClose }) {
           <X className="h-5 w-5" />
         </button>
 
-        {/* ===================================================
-            HEADER
-            =================================================== */}
+        {/* HEADER */}
 
         <div
           className="
@@ -430,9 +398,7 @@ export default function ViewCardModal({ card, onClose }) {
           </p>
         </div>
 
-        {/* ===================================================
-            CONTENT
-            =================================================== */}
+        {/* CONTENT */}
 
         <div
           className="
@@ -443,9 +409,7 @@ export default function ViewCardModal({ card, onClose }) {
             md:p-8
           "
         >
-          {/* =================================================
-              BUSINESS CARD
-              ================================================= */}
+          {/* BUSINESS CARD */}
 
           <div
             className="
@@ -464,9 +428,7 @@ export default function ViewCardModal({ card, onClose }) {
             </div>
           </div>
 
-          {/* =================================================
-              QR SECTION
-              ================================================= */}
+          {/* QR SECTION */}
 
           <div
             className="
@@ -518,9 +480,7 @@ export default function ViewCardModal({ card, onClose }) {
                 </p>
               </div>
 
-              {/* =================================================
-                  QR CODE
-                  ================================================= */}
+              {/* QR CODE */}
 
               <div
                 ref={qrRef}
@@ -617,8 +577,6 @@ export default function ViewCardModal({ card, onClose }) {
                 </div>
               </div>
 
-              {/* DESCRIPTION */}
-
               <p
                 className="
                   mt-4
@@ -630,9 +588,7 @@ export default function ViewCardModal({ card, onClose }) {
                 Download or share this QR code with anyone.
               </p>
 
-              {/* =================================================
-                  DOWNLOAD + SHARE
-                  ================================================= */}
+              {/* DOWNLOAD + SHARE */}
 
               <div
                 className="
@@ -696,9 +652,7 @@ export default function ViewCardModal({ card, onClose }) {
                 </button>
               </div>
 
-              {/* =================================================
-                  CARD LINK
-                  ================================================= */}
+              {/* CARD LINK */}
 
               <div className="mt-5">
                 <div
@@ -717,16 +671,6 @@ export default function ViewCardModal({ card, onClose }) {
                     "
                   >
                     Card Link
-                  </span>
-
-                  <span
-                    className="
-                      text-[10px]
-                      font-medium
-                      text-slate-400
-                    "
-                  >
-                    {getShortName()}
                   </span>
                 </div>
 
@@ -752,22 +696,11 @@ export default function ViewCardModal({ card, onClose }) {
                     "
                   />
 
-                  {/* =================================================
-                      IMPORTANT
-
-                      DISPLAY ONLY:
-
-                      /card/dipakkondhalkar
-
-                      NOT:
-
-                      https://digital-portal-orcin.vercel.app/card/...
-
-                      ================================================= */}
+                  {/* ORIGINAL FULL URL */}
 
                   <input
                     type="text"
-                    value={shortCardUrl}
+                    value={cardUrl}
                     readOnly
                     title={cardUrl}
                     className="
@@ -820,22 +753,17 @@ export default function ViewCardModal({ card, onClose }) {
                   </button>
                 </div>
 
-                {/* =================================================
-                    FULL URL IS NOT DISPLAYED HERE
-
-                    Only the short path is shown.
-                    ================================================= */}
+                {/* URL INFORMATION */}
 
                 <div
                   className="
                     mt-2
-                    truncate
                     text-center
                     text-[10px]
                     text-slate-400
                   "
                 >
-                  {shortCardUrl}
+                  Complete card link
                 </div>
               </div>
             </div>
