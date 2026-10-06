@@ -17,78 +17,187 @@ export default function ViewCardModal({ card, onClose }) {
   const cardUrl = createCardUrl(card);
 
   /* =========================================================
-     DOWNLOAD QR CODE
+     GET SAFE FILE NAME
      ========================================================= */
 
-  const handleDownloadQR = () => {
-    const svg = qrRef.current?.querySelector("svg");
-
-    if (!svg) return;
-
-    const serializer = new XMLSerializer();
-    const svgData = serializer.serializeToString(svg);
-
-    const blob = new Blob([svgData], {
-      type: "image/svg+xml;charset=utf-8",
-    });
-
-    const url = URL.createObjectURL(blob);
-
-    const safeName =
+  const getSafeName = () => {
+    return (
       card.fullName?.replace(/[^a-z0-9]/gi, "-").toLowerCase() ||
-      "business-card";
-
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `aaryans-qr-${safeName}.svg`;
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    URL.revokeObjectURL(url);
+      "business-card"
+    );
   };
 
   /* =========================================================
-     SHARE QR / CARD
+     CONVERT QR SVG → PNG
+     ========================================================= */
+
+  const createQRImage = async () => {
+    const svg = qrRef.current?.querySelector("svg");
+
+    if (!svg) {
+      throw new Error("QR code not found");
+    }
+
+    const serializer = new XMLSerializer();
+
+    const svgData = serializer.serializeToString(svg);
+
+    const svgBlob = new Blob([svgData], {
+      type: "image/svg+xml;charset=utf-8",
+    });
+
+    const svgUrl = URL.createObjectURL(svgBlob);
+
+    try {
+      const image = new Image();
+
+      await new Promise((resolve, reject) => {
+        image.onload = resolve;
+        image.onerror = reject;
+        image.src = svgUrl;
+      });
+
+      const canvas = document.createElement("canvas");
+
+      const size = 800;
+
+      canvas.width = size;
+      canvas.height = size;
+
+      const context = canvas.getContext("2d");
+
+      if (!context) {
+        throw new Error("Canvas is not supported");
+      }
+
+      /* White background */
+      context.fillStyle = "#ffffff";
+      context.fillRect(0, 0, size, size);
+
+      /* Draw QR */
+      context.drawImage(image, 0, 0, size, size);
+
+      const pngBlob = await new Promise((resolve) => {
+        canvas.toBlob(resolve, "image/png", 1);
+      });
+
+      if (!pngBlob) {
+        throw new Error("Could not create PNG");
+      }
+
+      return pngBlob;
+    } finally {
+      URL.revokeObjectURL(svgUrl);
+    }
+  };
+
+  /* =========================================================
+     DOWNLOAD QR CODE
+     ========================================================= */
+
+  const handleDownloadQR = async () => {
+    try {
+      const pngBlob = await createQRImage();
+
+      const url = URL.createObjectURL(pngBlob);
+
+      const link = document.createElement("a");
+
+      link.href = url;
+
+      link.download = `aaryans-qr-${getSafeName()}.png`;
+
+      document.body.appendChild(link);
+
+      link.click();
+
+      document.body.removeChild(link);
+
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("QR download failed:", error);
+
+      alert("Unable to download QR code.");
+    }
+  };
+
+  /* =========================================================
+     SHARE QR CODE
      ========================================================= */
 
   const handleShare = async () => {
     try {
-      /* -----------------------------------------
-         Try native sharing first
-         ----------------------------------------- */
+      const pngBlob = await createQRImage();
 
-      if (navigator.share) {
+      const file = new File([pngBlob], `aaryans-qr-${getSafeName()}.png`, {
+        type: "image/png",
+      });
+
+      /* =====================================================
+         MOBILE / SUPPORTED BROWSERS
+
+         This opens the native share menu.
+
+         Example:
+         WhatsApp
+         Telegram
+         Gmail
+         Bluetooth
+         Google Drive
+         Nearby Share
+         etc.
+         ===================================================== */
+
+      if (
+        navigator.share &&
+        navigator.canShare &&
+        navigator.canShare({
+          files: [file],
+        })
+      ) {
         await navigator.share({
-          title: `${card.fullName || "Aaryans"} - Digital Card`,
-          text: `View ${card.fullName || "this"} digital business card`,
-          url: cardUrl,
+          title: `${card.fullName || "Aaryans"} - QR Code`,
+          text: `Digital business card for ${card.fullName || "Aaryans"}`,
+          files: [file],
         });
 
         return;
       }
 
-      /* -----------------------------------------
-         Fallback: Copy card URL
-         ----------------------------------------- */
+      /* =====================================================
+         FALLBACK
 
-      await navigator.clipboard.writeText(cardUrl);
+         If browser cannot share files, download QR.
+         ===================================================== */
 
-      alert("Card link copied successfully!");
+      const url = URL.createObjectURL(pngBlob);
+
+      const link = document.createElement("a");
+
+      link.href = url;
+
+      link.download = `aaryans-qr-${getSafeName()}.png`;
+
+      document.body.appendChild(link);
+
+      link.click();
+
+      document.body.removeChild(link);
+
+      URL.revokeObjectURL(url);
+
+      alert(
+        "This browser does not support direct QR sharing. The QR code has been downloaded.",
+      );
     } catch (error) {
+      /* User cancelled share */
       if (error?.name === "AbortError") {
         return;
       }
 
-      console.error("Share failed:", error);
+      console.error("QR sharing failed:", error);
 
-      try {
-        await navigator.clipboard.writeText(cardUrl);
-        alert("Card link copied successfully!");
-      } catch {
-        alert("Unable to share the card.");
-      }
+      alert("Unable to share QR code.");
     }
   };
 
@@ -99,9 +208,11 @@ export default function ViewCardModal({ card, onClose }) {
   const handleCopyLink = async () => {
     try {
       await navigator.clipboard.writeText(cardUrl);
+
       alert("Card link copied successfully!");
     } catch (error) {
       console.error("Copy failed:", error);
+
       alert("Unable to copy the card link.");
     }
   };
@@ -193,9 +304,9 @@ export default function ViewCardModal({ card, onClose }) {
               ================================================= */}
 
           <div className="flex flex-col items-center justify-center">
-            {/* QR CARD */}
             <div className="w-full max-w-sm rounded-3xl border border-slate-200 bg-slate-50 p-6 shadow-sm">
               {/* QR TITLE */}
+
               <div className="mb-5 text-center">
                 <h3 className="text-lg font-bold text-slate-800">
                   Scan to View Card
@@ -206,7 +317,10 @@ export default function ViewCardModal({ card, onClose }) {
                 </p>
               </div>
 
-              {/* QR CODE */}
+              {/* =================================================
+                  QR CODE
+                  ================================================= */}
+
               <div
                 ref={qrRef}
                 className="
@@ -234,9 +348,8 @@ export default function ViewCardModal({ card, onClose }) {
                 />
               </div>
 
-              {/* QR DESCRIPTION */}
               <p className="mt-4 text-center text-xs text-slate-500">
-                Keep the QR code clear when downloading or sharing.
+                Download or share this QR code with anyone.
               </p>
 
               {/* =================================================
@@ -245,6 +358,7 @@ export default function ViewCardModal({ card, onClose }) {
 
               <div className="mt-5 grid grid-cols-2 gap-3">
                 {/* DOWNLOAD */}
+
                 <button
                   type="button"
                   onClick={handleDownloadQR}
@@ -272,6 +386,7 @@ export default function ViewCardModal({ card, onClose }) {
                 </button>
 
                 {/* SHARE */}
+
                 <button
                   type="button"
                   onClick={handleShare}
