@@ -345,7 +345,7 @@ export default function ViewCardModal({ card, onClose }) {
           flex
           max-h-[96vh]
           w-full
-          max-w-[900px]
+          max-w-[820px]
           flex-col
           overflow-hidden
           rounded-2xl
@@ -453,7 +453,7 @@ export default function ViewCardModal({ card, onClose }) {
               mx-auto
               grid
               w-full
-              max-w-[720px]
+              max-w-[680px]
               grid-cols-1
               items-start
               justify-items-center
@@ -466,14 +466,14 @@ export default function ViewCardModal({ card, onClose }) {
               sm:px-5
               sm:py-6
 
-              md:grid-cols-[300px_340px]
+              md:grid-cols-[290px_320px]
               md:justify-center
-              md:gap-5
+              md:gap-4
               md:px-2
               md:py-7
 
-              lg:grid-cols-[310px_350px]
-              lg:gap-6
+              lg:grid-cols-[290px_320px]
+              lg:gap-4
             "
           >
             {/* =================================================
@@ -495,9 +495,9 @@ export default function ViewCardModal({ card, onClose }) {
 
                   sm:max-w-[340px]
 
-                  md:max-w-[300px]
+                  md:max-w-[290px]
 
-                  lg:max-w-[310px]
+                  lg:max-w-[290px]
                 "
               >
                 <BusinessCard card={card} />
@@ -531,9 +531,9 @@ export default function ViewCardModal({ card, onClose }) {
                   sm:rounded-3xl
                   sm:p-5
 
-                  md:max-w-[340px]
+                  md:max-w-[320px]
 
-                  lg:p-6
+                  lg:p-5
                 "
               >
                 {/* =============================================
@@ -587,7 +587,7 @@ export default function ViewCardModal({ card, onClose }) {
                     flex
                     aspect-square
                     w-full
-                    max-w-[230px]
+                    max-w-[220px]
                     items-center
                     justify-center
                     rounded-[18px]
@@ -597,9 +597,9 @@ export default function ViewCardModal({ card, onClose }) {
                     p-2
                     shadow-inner
 
-                    sm:max-w-[250px]
-                    sm:rounded-[22px]
-                    sm:p-3
+                    sm:max-w-[240px]
+                    sm:rounded-[20px]
+                    sm:p-2.5
                   "
                 >
                   <div
@@ -616,7 +616,7 @@ export default function ViewCardModal({ card, onClose }) {
                       p-0
                       shadow-sm
 
-                      sm:rounded-[16px]
+                      sm:rounded-[14px]
                     "
                   >
                     <QRCodeSVG
@@ -645,7 +645,7 @@ export default function ViewCardModal({ card, onClose }) {
                     mx-auto
                     mt-2.5
                     flex
-                    max-w-[250px]
+                    max-w-[240px]
                     items-center
                     justify-center
                     rounded-lg
@@ -683,7 +683,6 @@ export default function ViewCardModal({ card, onClose }) {
                     gap-2
 
                     sm:mt-3
-                    sm:gap-2.5
                   "
                 >
                   {/* DOWNLOAD */}
