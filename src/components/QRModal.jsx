@@ -2,6 +2,8 @@ import { useRef } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { Check, Download, Share2, X, Smartphone } from "lucide-react";
 
+import aaryansLogo from "../assets/image.png";
+
 import { createCardUrl, generateVCard } from "../utils/card";
 
 /* =========================================================
@@ -15,6 +17,11 @@ export default function QRModal({ card, onClose }) {
 
   /* =========================================================
      OLD WORKING QR URL
+
+     This keeps:
+     /card/card-id?data=FULL_CARD_DATA
+
+     No database required.
      ========================================================= */
 
   const cardUrl = createCardUrl(card);
@@ -52,7 +59,7 @@ export default function QRModal({ card, onClose }) {
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, size, size);
 
-        /* Draw QR */
+        /* Draw QR with logo */
         ctx.drawImage(img, 0, 0, size, size);
 
         const pngUrl = canvas.toDataURL("image/png");
@@ -254,7 +261,9 @@ export default function QRModal({ card, onClose }) {
                 shadow-sm
               "
             >
-              {/* QR CODE */}
+              {/* =================================================
+                  QR CODE + ACTUAL COMPANY LOGO
+                  ================================================= */}
 
               <QRCodeSVG
                 value={cardUrl}
@@ -264,68 +273,15 @@ export default function QRModal({ card, onClose }) {
                 fgColor="#601D1E"
                 bgColor="#ffffff"
                 className="h-full w-full"
+                imageSettings={{
+                  src: aaryansLogo,
+                  x: undefined,
+                  y: undefined,
+                  height: 48,
+                  width: 48,
+                  excavate: true,
+                }}
               />
-
-              {/* =================================================
-                  CENTER AARYANS BRANDING
-                  ================================================= */}
-
-              <div
-                className="
-                  absolute
-                  left-1/2
-                  top-1/2
-                  flex
-                  w-[82px]
-                  -translate-x-1/2
-                  -translate-y-1/2
-                  flex-col
-                  items-center
-                  justify-center
-                  rounded-lg
-                  bg-white
-                  px-1.5
-                  py-1.5
-                  text-center
-                  shadow-sm
-                "
-              >
-                <div
-                  className="
-                    text-[7px]
-                    font-extrabold
-                    leading-tight
-                    tracking-wide
-                    text-[#601D1E]
-                  "
-                >
-                  AARYANS GROUP
-                </div>
-
-                <div
-                  className="
-                    mt-0.5
-                    text-[5.5px]
-                    font-semibold
-                    leading-tight
-                    text-slate-600
-                  "
-                >
-                  OF COMPANIES
-                </div>
-
-                <div
-                  className="
-                    mt-0.5
-                    text-[5px]
-                    font-medium
-                    leading-tight
-                    text-[#601D1E]
-                  "
-                >
-                  www.aaryans.group
-                </div>
-              </div>
             </div>
           </div>
 
