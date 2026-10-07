@@ -117,6 +117,7 @@ export default function ViewCardModal({ card, onClose }) {
 
     clonedSvg.setAttribute("width", finalSize);
     clonedSvg.setAttribute("height", finalSize);
+
     clonedSvg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
 
     const svgData = new XMLSerializer().serializeToString(clonedSvg);
@@ -344,7 +345,7 @@ export default function ViewCardModal({ card, onClose }) {
           flex
           max-h-[96vh]
           w-full
-          max-w-5xl
+          max-w-[900px]
           flex-col
           overflow-hidden
           rounded-2xl
@@ -452,7 +453,7 @@ export default function ViewCardModal({ card, onClose }) {
               mx-auto
               grid
               w-full
-              max-w-[760px]
+              max-w-[720px]
               grid-cols-1
               items-start
               justify-items-center
