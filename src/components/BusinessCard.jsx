@@ -5,7 +5,7 @@ import aaryansLogo from "../assets/image.png";
 import { COMPANY_NAME, COMPANY_WEBSITE, COMPANY_WEBSITE_URL } from "../config";
 
 /* =========================================================
-   PREMIUM AARYANS BUSINESS CARD
+   PREMIUM COMPACT AARYANS BUSINESS CARD
    ========================================================= */
 
 export default function BusinessCard({ card }) {
@@ -15,89 +15,42 @@ export default function BusinessCard({ card }) {
     <div
       className="
         business-card-font
-        relative
         w-full
-        max-w-[390px]
+        max-w-[330px]
         overflow-hidden
-        rounded-[30px]
+        rounded-[22px]
         border
-        border-[#dfd5ca]
-        bg-[#f8f5f0]
-        shadow-[0_25px_70px_rgba(59,24,26,0.22)]
+        border-[#ded5ca]
+        bg-[#faf8f4]
+        shadow-[0_18px_45px_rgba(59,24,26,0.18)]
       "
     >
       {/* =====================================================
-          TOP BRAND SECTION
+          BROWN BRAND + NAME SECTION
           ===================================================== */}
 
       <div
         className="
-          relative
-          overflow-hidden
           bg-[#681F22]
-          px-6
-          pb-[82px]
-          pt-9
-          text-center
+          px-4
+          pb-6
+          pt-6
         "
       >
-        {/* Decorative background glow */}
-        <div
-          className="
-            pointer-events-none
-            absolute
-            -left-20
-            -top-24
-            h-52
-            w-52
-            rounded-full
-            bg-[#E2BA6E]/10
-            blur-3xl
-          "
-        />
-
-        <div
-          className="
-            pointer-events-none
-            absolute
-            -right-20
-            top-10
-            h-52
-            w-52
-            rounded-full
-            bg-[#E2BA6E]/10
-            blur-3xl
-          "
-        />
-
-        {/* Top gold line */}
-        <div
-          className="
-            absolute
-            left-1/2
-            top-5
-            h-[2px]
-            w-14
-            -translate-x-1/2
-            rounded-full
-            bg-[#E2BA6E]
-          "
-        />
-
         {/* =================================================
             LOGO
             ================================================= */}
 
-        <div className="relative z-10 flex justify-center">
+        <div className="flex justify-center">
           <img
             src={aaryansLogo}
             alt="Aaryans"
             className="
-              h-[90px]
+              h-[68px]
               w-auto
-              max-w-[235px]
+              max-w-[190px]
               object-contain
-              drop-shadow-[0_8px_15px_rgba(0,0,0,0.25)]
+              drop-shadow-[0_5px_10px_rgba(0,0,0,0.20)]
             "
           />
         </div>
@@ -106,142 +59,85 @@ export default function BusinessCard({ card }) {
             COMPANY NAME
             ================================================= */}
 
-        <h2
+        <p
           className="
-            relative
-            z-10
-            mt-3
-            text-[18px]
-            font-extrabold
-            tracking-[0.2px]
+            mt-2
+            text-center
+            text-[14px]
+            font-bold
+            tracking-[0.1px]
             text-[#E2BA6E]
           "
         >
           {COMPANY_NAME}
-        </h2>
+        </p>
 
-        {/* Decorative divider */}
-        <div
-          className="
-            relative
-            z-10
-            mx-auto
-            mt-4
-            flex
-            items-center
-            justify-center
-            gap-2
-          "
-        >
-          <span className="h-px w-9 bg-[#E2BA6E]/60" />
+        {/* =================================================
+            GOLD DIVIDER
+            ================================================= */}
 
-          <span
-            className="
-              h-1.5
-              w-1.5
-              rotate-45
-              bg-[#E2BA6E]
-            "
-          />
+        <div className="mx-auto mt-3 flex items-center justify-center gap-2">
+          <span className="h-px w-7 bg-[#E2BA6E]/60" />
 
-          <span className="h-px w-9 bg-[#E2BA6E]/60" />
+          <span className="h-1.5 w-1.5 rotate-45 bg-[#E2BA6E]" />
+
+          <span className="h-px w-7 bg-[#E2BA6E]/60" />
         </div>
-      </div>
 
-      {/* =====================================================
-          NAME + DESIGNATION
-          PREMIUM BROWN BOX
-          ===================================================== */}
+        {/* =================================================
+            WHITE NAME + DESIGNATION BOX
 
-      <div
-        className="
-          relative
-          z-20
-          -mt-[58px]
-          px-5
-        "
-      >
+            Brown surrounds this box.
+            ================================================= */}
+
         <div
           className="
-            relative
-            overflow-hidden
-            rounded-[24px]
-            border
-            border-[#7b3033]
-            bg-[#5B1B20]
-            px-5
-            py-7
+            mt-5
+            rounded-[18px]
+            bg-white
+            px-4
+            py-6
             text-center
-            shadow-[0_18px_40px_rgba(70,24,26,0.28)]
+            shadow-[0_10px_25px_rgba(0,0,0,0.18)]
           "
         >
-          {/* Inner border */}
-          <div
-            className="
-              pointer-events-none
-              absolute
-              inset-[6px]
-              rounded-[19px]
-              border
-              border-[#E2BA6E]/20
-            "
-          />
-
-          {/* Decorative top gold line */}
-          <div
-            className="
-              absolute
-              left-1/2
-              top-0
-              h-[3px]
-              w-20
-              -translate-x-1/2
-              rounded-b-full
-              bg-[#E2BA6E]
-            "
-          />
-
           {/* Name */}
+
           <h1
             className="
-              relative
-              z-10
               break-words
-              px-2
-              text-[27px]
-              font-black
+              text-[22px]
+              font-extrabold
               uppercase
               leading-tight
-              tracking-[0.8px]
-              text-[#FFFFFF]
+              tracking-[0.4px]
+              text-[#681F22]
             "
           >
             {card.fullName}
           </h1>
 
-          {/* Gold separator */}
+          {/* Small gold divider */}
+
           <div
             className="
-              relative
-              z-10
               mx-auto
-              mt-4
-              h-[1px]
-              w-14
+              mt-3
+              h-[2px]
+              w-10
+              rounded-full
               bg-[#E2BA6E]
             "
           />
 
           {/* Designation */}
+
           <p
             className="
-              relative
-              z-10
-              mt-3
-              text-[18px]
+              mt-2
+              text-[15px]
               font-medium
-              tracking-[0.3px]
-              text-[#E2BA6E]
+              text-[#4A4A4A]
             "
           >
             {card.title}
@@ -251,17 +147,16 @@ export default function BusinessCard({ card }) {
 
       {/* =====================================================
           CONTACT INFORMATION
-          ICON + INFORMATION ONLY
           ===================================================== */}
 
       <div
         className="
-          px-6
-          pb-6
-          pt-9
+          bg-[#FAF8F5]
+          px-5
+          py-6
         "
       >
-        <div className="space-y-5">
+        <div className="space-y-4">
           {/* =================================================
               EMAIL
               ================================================= */}
@@ -270,43 +165,40 @@ export default function BusinessCard({ card }) {
             <a
               href={`mailto:${card.email}`}
               className="
-                group
                 flex
                 items-center
-                gap-4
+                gap-3
                 no-underline
               "
             >
-              {/* Icon Circle */}
+              {/* Icon */}
+
               <div
                 className="
                   flex
-                  h-10
-                  w-10
+                  h-8
+                  w-8
                   shrink-0
                   items-center
                   justify-center
-                  rounded-[13px]
+                  rounded-[9px]
                   bg-[#681F22]
                   text-[#E2BA6E]
-                  shadow-[0_5px_14px_rgba(104,31,34,0.20)]
-                  transition-all
-                  duration-200
-                  group-hover:scale-105
                 "
               >
-                <Mail className="h-[18px] w-[18px]" strokeWidth={2} />
+                <Mail className="h-[16px] w-[16px]" strokeWidth={2} />
               </div>
 
-              {/* Email */}
+              {/* Value */}
+
               <span
                 className="
                   min-w-0
                   break-all
-                  text-[15px]
+                  text-[13px]
                   font-medium
-                  leading-6
-                  text-[#454545]
+                  leading-5
+                  text-[#444444]
                 "
               >
                 {card.email}
@@ -322,41 +214,38 @@ export default function BusinessCard({ card }) {
             <a
               href={`tel:+91${card.phone}`}
               className="
-                group
                 flex
                 items-center
-                gap-4
+                gap-3
                 no-underline
               "
             >
-              {/* Icon Circle */}
+              {/* Icon */}
+
               <div
                 className="
                   flex
-                  h-10
-                  w-10
+                  h-8
+                  w-8
                   shrink-0
                   items-center
                   justify-center
-                  rounded-[13px]
+                  rounded-[9px]
                   bg-[#681F22]
                   text-[#E2BA6E]
-                  shadow-[0_5px_14px_rgba(104,31,34,0.20)]
-                  transition-all
-                  duration-200
-                  group-hover:scale-105
                 "
               >
-                <Phone className="h-[18px] w-[18px]" strokeWidth={2} />
+                <Phone className="h-[16px] w-[16px]" strokeWidth={2} />
               </div>
 
-              {/* Phone */}
+              {/* Value */}
+
               <span
                 className="
-                  text-[16px]
+                  text-[14px]
                   font-medium
-                  leading-6
-                  text-[#454545]
+                  leading-5
+                  text-[#444444]
                 "
               >
                 +91 {card.phone}
@@ -373,37 +262,38 @@ export default function BusinessCard({ card }) {
               className="
                 flex
                 items-start
-                gap-4
+                gap-3
               "
             >
-              {/* Icon Circle */}
+              {/* Icon */}
+
               <div
                 className="
                   mt-0.5
                   flex
-                  h-10
-                  w-10
+                  h-8
+                  w-8
                   shrink-0
                   items-center
                   justify-center
-                  rounded-[13px]
+                  rounded-[9px]
                   bg-[#681F22]
                   text-[#E2BA6E]
-                  shadow-[0_5px_14px_rgba(104,31,34,0.20)]
                 "
               >
-                <MapPin className="h-[18px] w-[18px]" strokeWidth={2} />
+                <MapPin className="h-[16px] w-[16px]" strokeWidth={2} />
               </div>
 
-              {/* Address */}
+              {/* Value */}
+
               <span
                 className="
                   min-w-0
                   whitespace-pre-line
-                  text-[15px]
+                  text-[13px]
                   font-medium
-                  leading-6
-                  text-[#454545]
+                  leading-5
+                  text-[#444444]
                 "
               >
                 {card.address}
@@ -420,68 +310,62 @@ export default function BusinessCard({ card }) {
             target="_blank"
             rel="noreferrer"
             className="
-              group
               flex
               items-center
-              gap-4
+              gap-3
               no-underline
             "
           >
-            {/* Icon Circle */}
+            {/* Icon */}
+
             <div
               className="
                 flex
-                h-10
-                w-10
+                h-8
+                w-8
                 shrink-0
                 items-center
                 justify-center
-                rounded-[13px]
+                rounded-[9px]
                 bg-[#681F22]
                 text-[#E2BA6E]
-                shadow-[0_5px_14px_rgba(104,31,34,0.20)]
-                transition-all
-                duration-200
-                group-hover:scale-105
               "
             >
-              <Globe className="h-[18px] w-[18px]" strokeWidth={2} />
+              <Globe className="h-[16px] w-[16px]" strokeWidth={2} />
             </div>
 
-            {/* Website */}
+            {/* Value */}
+
             <span
               className="
-                text-[15px]
+                text-[13px]
                 font-medium
-                leading-6
-                text-[#454545]
+                leading-5
+                text-[#444444]
               "
             >
               {COMPANY_WEBSITE}
             </span>
           </a>
         </div>
-      </div>
 
-      {/* =====================================================
-          PREMIUM BOTTOM DECORATION
-          NO SOCIAL MEDIA
-          ===================================================== */}
+        {/* =================================================
+            BOTTOM DECORATION
+            ================================================= */}
 
-      <div className="px-7 pb-6">
-        <div className="flex items-center gap-3">
-          <div className="h-px flex-1 bg-[#d8cdc1]" />
+        <div className="mt-5 flex items-center gap-3">
+          <div className="h-px flex-1 bg-[#ddd3c8]" />
 
           <div
             className="
-              h-2
-              w-2
+              h-1.5
+              w-1.5
               rotate-45
               bg-[#E2BA6E]
             "
           />
 
-          <div className="h-px flex-1 bg-[#d8cdc1]" />
+          <div className="h-px flex-1 bg-[#ddd3c8]" />
         </div>
       </div>
 
@@ -492,17 +376,17 @@ export default function BusinessCard({ card }) {
       <div
         className="
           bg-[#681F22]
-          px-5
-          py-3.5
+          px-4
+          py-2.5
           text-center
         "
       >
         <p
           className="
-            text-[9px]
+            text-[8px]
             font-bold
             uppercase
-            tracking-[2.5px]
+            tracking-[2px]
             text-[#E2BA6E]
           "
         >
