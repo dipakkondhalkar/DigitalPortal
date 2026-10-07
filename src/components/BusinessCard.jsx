@@ -5,16 +5,7 @@ import aaryansLogo from "../assets/image.png";
 import { COMPANY_NAME, COMPANY_WEBSITE, COMPANY_WEBSITE_URL } from "../config";
 
 /* =========================================================
-   COMPACT RESPONSIVE AARYANS BUSINESS CARD
-
-   Mobile:
-   285px
-
-   Laptop / Desktop:
-   250px
-
-   Height:
-   Completely automatic
+   PREMIUM RESPONSIVE AARYANS BUSINESS CARD
    ========================================================= */
 
 export default function BusinessCard({ card }) {
@@ -25,27 +16,27 @@ export default function BusinessCard({ card }) {
       className="
         business-card-font
         w-full
-        max-w-[285px]
+        max-w-[330px]
         lg:max-w-[250px]
         overflow-hidden
-        rounded-[18px]
+        rounded-[20px]
         border
         border-[#ded5ca]
         bg-[#faf8f4]
-        shadow-[0_15px_35px_rgba(59,24,26,0.18)]
+        shadow-[0_18px_45px_rgba(59,24,26,0.18)]
       "
     >
       {/* =====================================================
-          BROWN TOP SECTION
+          BROWN BRAND + NAME SECTION
           ===================================================== */}
 
       <div
         className="
           bg-[#681F22]
-          px-3
-          pb-5
-          pt-5
-          lg:px-2.5
+          px-4
+          pb-6
+          pt-6
+          lg:px-3
           lg:pb-4
           lg:pt-4
         "
@@ -59,13 +50,14 @@ export default function BusinessCard({ card }) {
             src={aaryansLogo}
             alt="Aaryans"
             className="
-              h-[58px]
+              h-[68px]
               w-auto
-              max-w-[165px]
+              max-w-[190px]
               object-contain
-              drop-shadow-[0_4px_8px_rgba(0,0,0,0.20)]
-              lg:h-[50px]
-              lg:max-w-[145px]
+              drop-shadow-[0_5px_10px_rgba(0,0,0,0.20)]
+
+              lg:h-[52px]
+              lg:max-w-[150px]
             "
           />
         </div>
@@ -76,12 +68,14 @@ export default function BusinessCard({ card }) {
 
         <p
           className="
-            mt-1.5
+            mt-2
             text-center
-            text-[12px]
+            text-[14px]
             font-bold
+            tracking-[0.1px]
             text-[#E2BA6E]
-            lg:mt-1
+
+            lg:mt-1.5
             lg:text-[10px]
           "
         >
@@ -95,113 +89,98 @@ export default function BusinessCard({ card }) {
         <div
           className="
             mx-auto
-            mt-2.5
+            mt-3
             flex
             items-center
             justify-center
-            gap-1.5
+            gap-2
+
             lg:mt-2
           "
         >
-          <span
-            className="
-              h-px
-              w-6
-              bg-[#E2BA6E]/60
-              lg:w-5
-            "
-          />
+          <span className="h-px w-7 bg-[#E2BA6E]/60 lg:w-5" />
 
           <span
             className="
-              h-1
-              w-1
+              h-1.5
+              w-1.5
               rotate-45
               bg-[#E2BA6E]
+
+              lg:h-1
+              lg:w-1
             "
           />
 
-          <span
-            className="
-              h-px
-              w-6
-              bg-[#E2BA6E]/60
-              lg:w-5
-            "
-          />
+          <span className="h-px w-7 bg-[#E2BA6E]/60 lg:w-5" />
         </div>
 
         {/* =================================================
             WHITE NAME + DESIGNATION BOX
-
-            Brown area remains visible around the box.
             ================================================= */}
 
         <div
           className="
-            mt-4
-            rounded-[14px]
+            mt-5
+            rounded-[18px]
             bg-white
-            px-3
-            py-4
+            px-4
+            py-6
             text-center
-            shadow-[0_8px_18px_rgba(0,0,0,0.18)]
+            shadow-[0_10px_25px_rgba(0,0,0,0.18)]
+
             lg:mt-3
-            lg:rounded-[12px]
-            lg:px-2.5
-            lg:py-3.5
+            lg:rounded-[14px]
+            lg:px-3
+            lg:py-4
           "
         >
-          {/* =================================================
-              NAME
-              ================================================= */}
+          {/* NAME */}
 
           <h1
             className="
               break-words
-              text-[19px]
+              text-[21px]
               font-extrabold
               uppercase
               leading-tight
-              tracking-[0.2px]
+              tracking-[0.3px]
               text-[#681F22]
+
               lg:text-[16px]
+              lg:tracking-[0.2px]
             "
           >
             {card.fullName}
           </h1>
 
-          {/* =================================================
-              GOLD DIVIDER
-              ================================================= */}
+          {/* GOLD DIVIDER */}
 
           <div
             className="
               mx-auto
-              mt-2
+              mt-3
               h-[2px]
-              w-8
+              w-10
               rounded-full
               bg-[#E2BA6E]
-              lg:mt-1.5
+
+              lg:mt-2
               lg:w-7
             "
           />
 
-          {/* =================================================
-              DESIGNATION
-              ================================================= */}
+          {/* DESIGNATION */}
 
           <p
             className="
-              mt-1.5
-              text-[13px]
+              mt-2
+              text-[14px]
               font-medium
-              leading-4
               text-[#4A4A4A]
-              lg:mt-1
+
+              lg:mt-1.5
               lg:text-[11px]
-              lg:leading-4
             "
           >
             {card.title}
@@ -211,7 +190,6 @@ export default function BusinessCard({ card }) {
 
       {/* =====================================================
           CONTACT INFORMATION
-          AUTOMATIC HEIGHT
           ===================================================== */}
 
       <div
@@ -219,13 +197,15 @@ export default function BusinessCard({ card }) {
           bg-[#FAF8F5]
           px-4
           py-5
+
           lg:px-3
-          lg:py-4
+          lg:py-3.5
         "
       >
         <div
           className="
-            space-y-3.5
+            space-y-4
+
             lg:space-y-2.5
           "
         >
@@ -239,51 +219,55 @@ export default function BusinessCard({ card }) {
               className="
                 flex
                 items-center
-                gap-2.5
+                gap-3
                 no-underline
+
                 lg:gap-2
               "
             >
-              {/* Icon */}
+              {/* EMAIL ICON */}
 
               <div
                 className="
                   flex
-                  h-7
-                  w-7
+                  h-8
+                  w-8
                   shrink-0
                   items-center
                   justify-center
-                  rounded-[7px]
+                  rounded-[9px]
                   bg-[#681F22]
                   text-[#E2BA6E]
+
                   lg:h-6
                   lg:w-6
-                  lg:rounded-[6px]
+                  lg:rounded-[7px]
                 "
               >
                 <Mail
                   className="
-                    h-[13px]
-                    w-[13px]
-                    lg:h-[12px]
-                    lg:w-[12px]
+                    h-[15px]
+                    w-[15px]
+
+                    lg:h-3
+                    lg:w-3
                   "
                   strokeWidth={2}
                 />
               </div>
 
-              {/* Information */}
+              {/* EMAIL */}
 
               <span
                 className="
                   min-w-0
                   break-all
-                  text-[11px]
+                  text-[12px]
                   font-medium
-                  leading-4
+                  leading-5
                   text-[#444444]
-                  lg:text-[9.5px]
+
+                  lg:text-[9px]
                   lg:leading-4
                 "
               >
@@ -302,49 +286,54 @@ export default function BusinessCard({ card }) {
               className="
                 flex
                 items-center
-                gap-2.5
+                gap-3
                 no-underline
+
                 lg:gap-2
               "
             >
-              {/* Icon */}
+              {/* PHONE ICON */}
 
               <div
                 className="
                   flex
-                  h-7
-                  w-7
+                  h-8
+                  w-8
                   shrink-0
                   items-center
                   justify-center
-                  rounded-[7px]
+                  rounded-[9px]
                   bg-[#681F22]
                   text-[#E2BA6E]
+
                   lg:h-6
                   lg:w-6
-                  lg:rounded-[6px]
+                  lg:rounded-[7px]
                 "
               >
                 <Phone
                   className="
-                    h-[13px]
-                    w-[13px]
-                    lg:h-[12px]
-                    lg:w-[12px]
+                    h-[15px]
+                    w-[15px]
+
+                    lg:h-3
+                    lg:w-3
                   "
                   strokeWidth={2}
                 />
               </div>
 
-              {/* Information */}
+              {/* PHONE */}
 
               <span
                 className="
-                  text-[12px]
+                  text-[13px]
                   font-medium
-                  leading-4
+                  leading-5
                   text-[#444444]
-                  lg:text-[10px]
+
+                  lg:text-[9px]
+                  lg:leading-4
                 "
               >
                 +91 {card.phone}
@@ -361,51 +350,55 @@ export default function BusinessCard({ card }) {
               className="
                 flex
                 items-start
-                gap-2.5
+                gap-3
+
                 lg:gap-2
               "
             >
-              {/* Icon */}
+              {/* LOCATION ICON */}
 
               <div
                 className="
                   mt-0.5
                   flex
-                  h-7
-                  w-7
+                  h-8
+                  w-8
                   shrink-0
                   items-center
                   justify-center
-                  rounded-[7px]
+                  rounded-[9px]
                   bg-[#681F22]
                   text-[#E2BA6E]
+
                   lg:h-6
                   lg:w-6
-                  lg:rounded-[6px]
+                  lg:rounded-[7px]
                 "
               >
                 <MapPin
                   className="
-                    h-[13px]
-                    w-[13px]
-                    lg:h-[12px]
-                    lg:w-[12px]
+                    h-[15px]
+                    w-[15px]
+
+                    lg:h-3
+                    lg:w-3
                   "
                   strokeWidth={2}
                 />
               </div>
 
-              {/* Information */}
+              {/* ADDRESS */}
 
               <span
                 className="
                   min-w-0
                   whitespace-pre-line
-                  text-[11px]
+                  text-[12px]
                   font-medium
-                  leading-4
+                  leading-5
                   text-[#444444]
-                  lg:text-[9.5px]
+
+                  lg:text-[9px]
                   lg:leading-4
                 "
               >
@@ -425,49 +418,54 @@ export default function BusinessCard({ card }) {
             className="
               flex
               items-center
-              gap-2.5
+              gap-3
               no-underline
+
               lg:gap-2
             "
           >
-            {/* Icon */}
+            {/* WEBSITE ICON */}
 
             <div
               className="
                 flex
-                h-7
-                w-7
+                h-8
+                w-8
                 shrink-0
                 items-center
                 justify-center
-                rounded-[7px]
+                rounded-[9px]
                 bg-[#681F22]
                 text-[#E2BA6E]
+
                 lg:h-6
                 lg:w-6
-                lg:rounded-[6px]
+                lg:rounded-[7px]
               "
             >
               <Globe
                 className="
-                  h-[13px]
-                  w-[13px]
-                  lg:h-[12px]
-                  lg:w-[12px]
+                  h-[15px]
+                  w-[15px]
+
+                  lg:h-3
+                  lg:w-3
                 "
                 strokeWidth={2}
               />
             </div>
 
-            {/* Information */}
+            {/* WEBSITE */}
 
             <span
               className="
-                text-[11px]
+                text-[12px]
                 font-medium
-                leading-4
+                leading-5
                 text-[#444444]
-                lg:text-[9.5px]
+
+                lg:text-[9px]
+                lg:leading-4
               "
             >
               {COMPANY_WEBSITE}
@@ -481,21 +479,26 @@ export default function BusinessCard({ card }) {
 
         <div
           className="
-            mt-4
+            mt-5
             flex
             items-center
-            gap-2
+            gap-3
+
             lg:mt-3
+            lg:gap-2
           "
         >
           <div className="h-px flex-1 bg-[#ddd3c8]" />
 
           <div
             className="
-              h-1
-              w-1
+              h-1.5
+              w-1.5
               rotate-45
               bg-[#E2BA6E]
+
+              lg:h-1
+              lg:w-1
             "
           />
 
@@ -510,20 +513,24 @@ export default function BusinessCard({ card }) {
       <div
         className="
           bg-[#681F22]
-          px-3
-          py-2
+          px-4
+          py-2.5
           text-center
+
+          lg:px-3
           lg:py-1.5
         "
       >
         <p
           className="
-            text-[7px]
+            text-[8px]
             font-bold
             uppercase
-            tracking-[1.7px]
+            tracking-[2px]
             text-[#E2BA6E]
-            lg:text-[6.5px]
+
+            lg:text-[6px]
+            lg:tracking-[1.5px]
           "
         >
           Aaryans Group of Companies
