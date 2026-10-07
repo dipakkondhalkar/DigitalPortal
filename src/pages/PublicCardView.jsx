@@ -11,14 +11,21 @@ import aaryansLogo from "../assets/image.png";
    PUBLIC CARD PAGE
 
    Supports:
+
    /card/dipakkondhalkar
    /card/old-card-id
    /card/id?data=...
 
    Actions:
+
    - Download Card
    - Share Card Image
    - Save Contact
+
+   SHARE IMAGE:
+   Only the business card is included.
+   No outside background.
+   No outside padding.
    ========================================================= */
 
 /* =========================================================
@@ -96,14 +103,15 @@ const roundedRect = (ctx, x, y, width, height, radius) => {
 };
 
 /* =========================================================
-   DRAW TEXT
+   DRAW WRAPPED TEXT
    ========================================================= */
 
 const drawText = (ctx, text, x, y, maxWidth, lineHeight) => {
   const words = String(text || "").split(" ");
 
   let line = "";
-  let lines = [];
+
+  const lines = [];
 
   for (let i = 0; i < words.length; i++) {
     const testLine = line.length > 0 ? `${line} ${words[i]}` : words[i];
@@ -112,6 +120,7 @@ const drawText = (ctx, text, x, y, maxWidth, lineHeight) => {
 
     if (metrics.width > maxWidth && line.length > 0) {
       lines.push(line);
+
       line = words[i];
     } else {
       line = testLine;
@@ -129,11 +138,17 @@ const drawText = (ctx, text, x, y, maxWidth, lineHeight) => {
   return lines.length;
 };
 
+/* =========================================================
+   PUBLIC CARD COMPONENT
+   ========================================================= */
+
 export default function PublicCardView() {
   const { id } = useParams();
 
   const [card, setCard] = useState(null);
+
   const [loading, setLoading] = useState(true);
+
   const [error, setError] = useState("");
 
   /* =========================================================
@@ -143,7 +158,9 @@ export default function PublicCardView() {
   useEffect(() => {
     try {
       setLoading(true);
+
       setError("");
+
       setCard(null);
 
       /* =====================================================
@@ -168,7 +185,9 @@ export default function PublicCardView() {
               qrNameSlug === String(id).toLowerCase()
             ) {
               setCard(qrCard);
+
               setLoading(false);
+
               return;
             }
 
@@ -202,7 +221,9 @@ export default function PublicCardView() {
 
             if (localCard) {
               setCard(localCard);
+
               setLoading(false);
+
               return;
             }
           }
@@ -216,11 +237,13 @@ export default function PublicCardView() {
          ===================================================== */
 
       setError("Card Not Found");
+
       setLoading(false);
     } catch (err) {
       console.error("Public card error:", err);
 
       setError("Card Not Found");
+
       setLoading(false);
     }
   }, [id]);
@@ -233,6 +256,10 @@ export default function PublicCardView() {
     if (!card) return;
 
     try {
+      /* ===================================================
+           LOAD LOGO
+           =================================================== */
+
       const response = await fetch(aaryansLogo);
 
       if (!response.ok) {
@@ -240,6 +267,10 @@ export default function PublicCardView() {
       }
 
       const logoBlob = await response.blob();
+
+      /* ===================================================
+           LOGO TO BASE64
+           =================================================== */
 
       const logoBase64 = await new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -254,6 +285,10 @@ export default function PublicCardView() {
 
         reader.readAsDataURL(logoBlob);
       });
+
+      /* ===================================================
+           HTML CARD
+           =================================================== */
 
       const cardHtml = `
 <!DOCTYPE html>
@@ -273,11 +308,13 @@ export default function PublicCardView() {
 ${escapeHtml(card.fullName || "Business Card")}
 </title>
 
+
 <style>
 
 * {
   box-sizing: border-box;
 }
+
 
 body {
 
@@ -299,6 +336,7 @@ body {
   align-items: flex-start;
 }
 
+
 .card {
 
   width: 330px;
@@ -316,6 +354,7 @@ body {
     rgba(59,24,26,0.18);
 }
 
+
 .top {
 
   background: #681F22;
@@ -327,6 +366,7 @@ body {
 
   text-align: center;
 }
+
 
 .logo {
 
@@ -344,6 +384,7 @@ body {
     0 auto 8px;
 }
 
+
 .company {
 
   color: #E2BA6E;
@@ -352,6 +393,7 @@ body {
 
   font-weight: bold;
 }
+
 
 .divider {
 
@@ -364,6 +406,7 @@ body {
   margin:
     14px auto;
 }
+
 
 .name-box {
 
@@ -381,6 +424,7 @@ body {
     rgba(0,0,0,0.18);
 }
 
+
 .name {
 
   color: #681F22;
@@ -396,6 +440,7 @@ body {
   word-break: break-word;
 }
 
+
 .small-line {
 
   width: 40px;
@@ -408,12 +453,14 @@ body {
     12px auto 8px;
 }
 
+
 .title {
 
   color: #4A4A4A;
 
   font-size: 14px;
 }
+
 
 .details {
 
@@ -422,6 +469,7 @@ body {
   padding:
     22px 18px;
 }
+
 
 .detail {
 
@@ -437,6 +485,7 @@ body {
 
   line-height: 1.5;
 }
+
 
 .icon {
 
@@ -461,12 +510,14 @@ body {
   font-size: 13px;
 }
 
+
 .value {
 
   word-break: break-word;
 
   padding-top: 5px;
 }
+
 
 .bottom-line {
 
@@ -476,6 +527,7 @@ body {
 
   margin-top: 18px;
 }
+
 
 .brand {
 
@@ -500,11 +552,15 @@ body {
 
 </head>
 
+
 <body>
+
 
 <div class="card">
 
+
   <div class="top">
+
 
     <img
       class="logo"
@@ -512,29 +568,45 @@ body {
       alt="Aaryans"
     />
 
+
     <div class="company">
+
       Aaryans Group of Companies
+
     </div>
+
 
     <div class="divider"></div>
 
+
     <div class="name-box">
 
+
       <div class="name">
+
         ${escapeHtml(card.fullName)}
+
       </div>
+
 
       <div class="small-line"></div>
 
+
       <div class="title">
+
         ${escapeHtml(card.title)}
+
       </div>
+
 
     </div>
 
+
   </div>
 
+
   <div class="details">
+
 
     ${
       card.email
@@ -554,6 +626,7 @@ body {
         : ""
     }
 
+
     ${
       card.phone
         ? `
@@ -571,6 +644,7 @@ body {
         `
         : ""
     }
+
 
     ${
       card.address
@@ -590,6 +664,7 @@ body {
         : ""
     }
 
+
     <div class="detail">
 
       <div class="icon">
@@ -602,20 +677,31 @@ body {
 
     </div>
 
+
     <div class="bottom-line"></div>
 
+
   </div>
+
 
   <div class="brand">
+
     Aaryans Group of Companies
+
   </div>
 
+
 </div>
+
 
 </body>
 
 </html>
 `;
+
+      /* ===================================================
+           CREATE FILE
+           =================================================== */
 
       const blob = new Blob([cardHtml], {
         type: "text/html;charset=utf-8",
@@ -648,14 +734,40 @@ body {
   };
 
   /* =========================================================
-     CREATE ACTUAL CARD IMAGE
+     CREATE CARD IMAGE
+
+     IMPORTANT:
+
+     The canvas size is EXACTLY the card size.
+
+     There is NO:
+     - outside beige background
+     - outside padding
+     - outside margin
+
+     The resulting PNG contains ONLY the card.
      ========================================================= */
 
   const createCardImage = async () => {
-    const scale = 2;
+    /*
+        Exact image/card size.
+      */
 
-    const width = 660;
-    const height = 1040;
+    const width = 620;
+
+    const height = 1000;
+
+    /*
+        High-resolution image.
+
+        Actual PNG:
+        1240 x 2000
+
+        This gives a sharper image
+        when shared on WhatsApp.
+      */
+
+    const scale = 2;
 
     const canvas = document.createElement("canvas");
 
@@ -665,74 +777,62 @@ body {
 
     const ctx = canvas.getContext("2d");
 
+    /*
+        Scale drawing.
+      */
+
     ctx.scale(scale, scale);
 
     /* =====================================================
-       BACKGROUND
-       ===================================================== */
+         CARD SHADOW
 
-    ctx.fillStyle = "#f7f0e5";
+         This shadow is clipped inside
+         the card area so there is no
+         outside background.
+         ===================================================== */
+
+    ctx.save();
+
+    roundedRect(ctx, 0, 0, width, height, 40);
+
+    ctx.clip();
+
+    /* =====================================================
+         CARD MAIN BACKGROUND
+         ===================================================== */
+
+    ctx.fillStyle = "#FAF8F4";
 
     ctx.fillRect(0, 0, width, height);
 
     /* =====================================================
-       CARD SHADOW
-       ===================================================== */
-
-    ctx.shadowColor = "rgba(59,24,26,0.20)";
-
-    ctx.shadowBlur = 30;
-
-    ctx.shadowOffsetY = 12;
-
-    /* =====================================================
-       CARD BACKGROUND
-       ===================================================== */
-
-    roundedRect(ctx, 20, 20, width - 40, height - 40, 40);
-
-    ctx.fillStyle = "#faf8f4";
-
-    ctx.fill();
-
-    ctx.shadowColor = "transparent";
-
-    /* =====================================================
-       TOP BROWN SECTION
-       ===================================================== */
-
-    ctx.save();
-
-    roundedRect(ctx, 20, 20, width - 40, 520, 40);
-
-    ctx.clip();
+         TOP MAROON SECTION
+         ===================================================== */
 
     ctx.fillStyle = "#681F22";
 
-    ctx.fillRect(20, 20, width - 40, 520);
-
-    ctx.restore();
+    ctx.fillRect(0, 0, width, 520);
 
     /* =====================================================
-       LOGO
-       ===================================================== */
+         LOGO
+         ===================================================== */
 
     try {
       const logo = await loadImage(aaryansLogo);
 
-      const logoMaxWidth = 330;
+      const maxLogoWidth = 330;
 
-      const logoMaxHeight = 120;
+      const maxLogoHeight = 120;
 
-      const logoRatio = Math.min(
-        logoMaxWidth / logo.width,
+      const ratio = Math.min(
+        maxLogoWidth / logo.width,
 
-        logoMaxHeight / logo.height,
+        maxLogoHeight / logo.height,
       );
 
-      const logoWidth = logo.width * logoRatio;
+      const logoWidth = logo.width * ratio;
 
-      const logoHeight = logo.height * logoRatio;
+      const logoHeight = logo.height * ratio;
 
       ctx.drawImage(
         logo,
@@ -750,8 +850,8 @@ body {
     }
 
     /* =====================================================
-       COMPANY NAME
-       ===================================================== */
+         COMPANY NAME
+         ===================================================== */
 
     ctx.textAlign = "center";
 
@@ -762,16 +862,16 @@ body {
     ctx.fillText("Aaryans Group of Companies", width / 2, 220);
 
     /* =====================================================
-       GOLD DIVIDER
-       ===================================================== */
+         GOLD DIVIDER
+         ===================================================== */
 
     ctx.fillStyle = "#E2BA6E";
 
     ctx.fillRect(width / 2 - 50, 245, 100, 3);
 
     /* =====================================================
-       NAME WHITE BOX
-       ===================================================== */
+         WHITE NAME BOX
+         ===================================================== */
 
     ctx.shadowColor = "rgba(0,0,0,0.18)";
 
@@ -779,15 +879,15 @@ body {
 
     roundedRect(ctx, 70, 285, width - 140, 185, 30);
 
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = "#FFFFFF";
 
     ctx.fill();
 
     ctx.shadowColor = "transparent";
 
     /* =====================================================
-       NAME
-       ===================================================== */
+         NAME
+         ===================================================== */
 
     ctx.fillStyle = "#681F22";
 
@@ -797,24 +897,29 @@ body {
 
     drawText(
       ctx,
+
       String(card.fullName || "").toUpperCase(),
+
       width / 2,
+
       345,
+
       width - 190,
+
       45,
     );
 
     /* =====================================================
-       SMALL GOLD LINE
-       ===================================================== */
+         SMALL GOLD LINE
+         ===================================================== */
 
     ctx.fillStyle = "#E2BA6E";
 
     ctx.fillRect(width / 2 - 35, 395, 70, 3);
 
     /* =====================================================
-       DESIGNATION
-       ===================================================== */
+         DESIGNATION
+         ===================================================== */
 
     ctx.fillStyle = "#4A4A4A";
 
@@ -823,14 +928,18 @@ body {
     ctx.fillText(card.title || "", width / 2, 435);
 
     /* =====================================================
-       CONTACT SECTION
-       ===================================================== */
+         CONTACT SECTION
+         ===================================================== */
 
     ctx.fillStyle = "#FAF8F5";
 
-    ctx.fillRect(20, 540, width - 40, 430);
+    ctx.fillRect(0, 520, width, 450);
 
     let currentY = 600;
+
+    /* =====================================================
+         CONTACT ROW
+         ===================================================== */
 
     const drawContactRow = (icon, text) => {
       /* ICON BOX */
@@ -864,47 +973,69 @@ body {
       currentY += 85;
     };
 
+    /* =====================================================
+         EMAIL
+         ===================================================== */
+
     if (card.email) {
       drawContactRow("✉", card.email);
     }
+
+    /* =====================================================
+         PHONE
+         ===================================================== */
 
     if (card.phone) {
       drawContactRow("☎", `+91 ${card.phone}`);
     }
 
+    /* =====================================================
+         ADDRESS
+         ===================================================== */
+
     if (card.address) {
       drawContactRow("●", card.address);
     }
 
+    /* =====================================================
+         WEBSITE
+         ===================================================== */
+
     drawContactRow("🌐", "www.aaryans.group");
 
     /* =====================================================
-       BOTTOM DIVIDER
-       ===================================================== */
+         BOTTOM DIVIDER
+         ===================================================== */
 
-    ctx.fillStyle = "#ddd3c8";
+    ctx.fillStyle = "#DDD3C8";
 
     ctx.fillRect(60, 920, width - 120, 2);
 
     /* =====================================================
-       BRAND STRIP
-       ===================================================== */
+         BRAND FOOTER
+         ===================================================== */
 
     ctx.fillStyle = "#681F22";
 
-    ctx.fillRect(20, 970, width - 40, 70);
+    ctx.fillRect(0, 970, width, 30);
 
     ctx.fillStyle = "#E2BA6E";
 
-    ctx.font = "bold 16px Arial";
+    ctx.font = "bold 14px Arial";
 
     ctx.textAlign = "center";
 
-    ctx.fillText("AARYANS GROUP OF COMPANIES", width / 2, 1013);
+    ctx.fillText("AARYANS GROUP OF COMPANIES", width / 2, 990);
 
     /* =====================================================
-       RETURN CANVAS
-       ===================================================== */
+         RESTORE CLIP
+         ===================================================== */
+
+    ctx.restore();
+
+    /* =====================================================
+         RETURN IMAGE
+         ===================================================== */
 
     return canvas;
   };
@@ -917,78 +1048,107 @@ body {
     if (!card) return;
 
     try {
-      /* =====================================================
-         CHECK IMAGE SHARE SUPPORT
-         ===================================================== */
+      /* ===================================================
+           CREATE CARD IMAGE
+           =================================================== */
 
-      if (navigator.share && navigator.canShare) {
-        const canvas = await createCardImage();
+      const canvas = await createCardImage();
 
-        const blob = await new Promise((resolve) => {
-          canvas.toBlob(resolve, "image/png");
-        });
+      /* ===================================================
+           CONVERT CANVAS TO PNG
+           =================================================== */
 
-        if (!blob) {
-          throw new Error("Unable to create card image.");
-        }
+      const blob = await new Promise((resolve) => {
+        canvas.toBlob(resolve, "image/png");
+      });
 
-        const file = new File(
-          [blob],
-          `${card.fullName || "business-card"}-business-card.png`,
-          {
-            type: "image/png",
-          },
-        );
-
-        const shareData = {
-          title: `${card.fullName} - Aaryans Group`,
-          text: `${card.fullName} - ${card.title || "Business Card"}`,
-          files: [file],
-        };
-
-        if (navigator.canShare(shareData)) {
-          await navigator.share(shareData);
-
-          return;
-        }
+      if (!blob) {
+        throw new Error("Unable to create card image.");
       }
 
-      /* =====================================================
-         FALLBACK
-         ===================================================== */
+      /* ===================================================
+           CREATE FILE
+           =================================================== */
 
-      const shareUrl = window.location.href;
+      const file = new File(
+        [blob],
 
-      if (navigator.share) {
-        await navigator.share({
-          title: `${card.fullName} - Aaryans Group`,
-          text: `${card.fullName} - ${card.title || "Business Card"}`,
-          url: shareUrl,
-        });
+        `${card.fullName || "business-card"}-business-card.png`,
+
+        {
+          type: "image/png",
+        },
+      );
+
+      /* ===================================================
+           SHARE IMAGE
+           =================================================== */
+
+      const shareData = {
+        title: `${card.fullName} - Aaryans Group`,
+
+        text: `${card.fullName} - ${card.title || "Business Card"}`,
+
+        files: [file],
+      };
+
+      /* ===================================================
+           CHECK FILE SHARE
+           =================================================== */
+
+      if (
+        navigator.share &&
+        navigator.canShare &&
+        navigator.canShare(shareData)
+      ) {
+        await navigator.share(shareData);
 
         return;
       }
 
-      if (navigator.clipboard) {
-        await navigator.clipboard.writeText(shareUrl);
+      /* ===================================================
+           FALLBACK
 
-        alert(
-          "Card image sharing is not supported by this browser. Card link copied.",
-        );
+           If browser cannot share
+           image file, download the
+           PNG instead.
+           =================================================== */
 
-        return;
-      }
+      const imageUrl = URL.createObjectURL(blob);
 
-      alert("Card sharing is not supported on this browser.");
+      const link = document.createElement("a");
+
+      link.href = imageUrl;
+
+      link.download = `${card.fullName || "business-card"}-business-card.png`;
+
+      document.body.appendChild(link);
+
+      link.click();
+
+      document.body.removeChild(link);
+
+      URL.revokeObjectURL(imageUrl);
+
+      alert(
+        "Your card image was created and downloaded because image sharing is not supported by this browser.",
+      );
     } catch (shareError) {
+      /*
+          User cancelled the
+          share menu.
+        */
+
       if (shareError?.name !== "AbortError") {
         console.error("Share error:", shareError);
+
+        alert("Unable to share the business card.");
       }
     }
   };
 
   /* =========================================================
-     LOADING
+     LOADING SCREEN
      ========================================================= */
 
   if (loading) {
@@ -1148,7 +1308,6 @@ body {
 
         {/* =================================================
             DOWNLOAD + SHARE
-            OUTSIDE CARD
             ================================================= */}
 
         <div
@@ -1160,7 +1319,9 @@ body {
             gap-2
           "
         >
-          {/* DOWNLOAD */}
+          {/* ===============================================
+              DOWNLOAD CARD
+              =============================================== */}
 
           <button
             type="button"
@@ -1193,7 +1354,9 @@ body {
             Download Card
           </button>
 
-          {/* SHARE */}
+          {/* ===============================================
+              SHARE
+              =============================================== */}
 
           <button
             type="button"
