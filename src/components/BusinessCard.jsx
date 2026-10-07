@@ -6,7 +6,6 @@ import { COMPANY_NAME, COMPANY_WEBSITE, COMPANY_WEBSITE_URL } from "../config";
 
 /* =========================================================
    PREMIUM COMPACT AARYANS BUSINESS CARD
-   Auto Height - No Fixed Height
    ========================================================= */
 
 export default function BusinessCard({ card }) {
@@ -18,6 +17,7 @@ export default function BusinessCard({ card }) {
         business-card-font
         w-full
         max-w-[300px]
+        md:max-w-[300px]
         overflow-hidden
         rounded-[22px]
         border
@@ -27,7 +27,7 @@ export default function BusinessCard({ card }) {
       "
     >
       {/* =====================================================
-          BROWN TOP SECTION
+          BROWN BRAND + NAME SECTION
           ===================================================== */}
 
       <div
@@ -47,9 +47,9 @@ export default function BusinessCard({ card }) {
             src={aaryansLogo}
             alt="Aaryans"
             className="
-              h-[64px]
+              h-[68px]
               w-auto
-              max-w-[175px]
+              max-w-[190px]
               object-contain
               drop-shadow-[0_5px_10px_rgba(0,0,0,0.20)]
             "
@@ -64,7 +64,7 @@ export default function BusinessCard({ card }) {
           className="
             mt-2
             text-center
-            text-[13px]
+            text-[14px]
             font-bold
             tracking-[0.1px]
             text-[#E2BA6E]
@@ -103,18 +103,15 @@ export default function BusinessCard({ card }) {
 
         {/* =================================================
             WHITE NAME + DESIGNATION BOX
-
-            Brown area remains visible around this box.
-            Height is completely automatic.
             ================================================= */}
 
         <div
           className="
             mt-5
-            rounded-[17px]
+            rounded-[18px]
             bg-white
             px-4
-            py-5
+            py-6
             text-center
             shadow-[0_10px_25px_rgba(0,0,0,0.18)]
           "
@@ -142,7 +139,7 @@ export default function BusinessCard({ card }) {
               mx-auto
               mt-3
               h-[2px]
-              w-9
+              w-10
               rounded-full
               bg-[#E2BA6E]
             "
@@ -155,7 +152,6 @@ export default function BusinessCard({ card }) {
               mt-2
               text-[14px]
               font-medium
-              leading-5
               text-[#4A4A4A]
             "
           >
@@ -166,7 +162,6 @@ export default function BusinessCard({ card }) {
 
       {/* =====================================================
           CONTACT INFORMATION
-          Height automatically follows content
           ===================================================== */}
 
       <div
@@ -191,7 +186,7 @@ export default function BusinessCard({ card }) {
                 no-underline
               "
             >
-              {/* Icon */}
+              {/* EMAIL ICON */}
 
               <div
                 className="
@@ -209,7 +204,7 @@ export default function BusinessCard({ card }) {
                 <Mail className="h-[15px] w-[15px]" strokeWidth={2} />
               </div>
 
-              {/* Information */}
+              {/* EMAIL */}
 
               <span
                 className="
@@ -240,7 +235,7 @@ export default function BusinessCard({ card }) {
                 no-underline
               "
             >
-              {/* Icon */}
+              {/* PHONE ICON */}
 
               <div
                 className="
@@ -258,7 +253,7 @@ export default function BusinessCard({ card }) {
                 <Phone className="h-[15px] w-[15px]" strokeWidth={2} />
               </div>
 
-              {/* Information */}
+              {/* PHONE */}
 
               <span
                 className="
@@ -285,7 +280,7 @@ export default function BusinessCard({ card }) {
                 gap-3
               "
             >
-              {/* Icon */}
+              {/* LOCATION ICON */}
 
               <div
                 className="
@@ -304,7 +299,7 @@ export default function BusinessCard({ card }) {
                 <MapPin className="h-[15px] w-[15px]" strokeWidth={2} />
               </div>
 
-              {/* Information */}
+              {/* ADDRESS */}
 
               <span
                 className="
@@ -336,7 +331,7 @@ export default function BusinessCard({ card }) {
               no-underline
             "
           >
-            {/* Icon */}
+            {/* WEBSITE ICON */}
 
             <div
               className="
@@ -354,7 +349,7 @@ export default function BusinessCard({ card }) {
               <Globe className="h-[15px] w-[15px]" strokeWidth={2} />
             </div>
 
-            {/* Information */}
+            {/* WEBSITE */}
 
             <span
               className="
