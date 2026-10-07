@@ -18,20 +18,13 @@ export default function QRModal({ card, onClose }) {
   /* =========================================================
      OLD WORKING QR URL
 
-     Example:
-
-     /card/card-id?data=FULL_CARD_DATA
-
      The complete card data remains inside the QR.
      ========================================================= */
 
   const cardUrl = createCardUrl(card);
 
   /* =========================================================
-     CONVERT IMAGE TO DATA URL
-
-     This is important because the logo must be embedded
-     inside the downloaded/shared QR image.
+     CONVERT LOGO TO DATA URL
      ========================================================= */
 
   const imageToDataUrl = async (imageUrl) => {
@@ -57,17 +50,15 @@ export default function QRModal({ card, onClose }) {
   };
 
   /* =========================================================
-     CREATE QR PNG BLOB
+     CREATE FINAL QR PNG
 
-     This function creates the final QR image with:
+     This creates a perfectly centered square PNG.
 
-     - QR code
-     - Aaryans logo
+     QR:
+     - 1000 x 1000
+     - Equal space on all sides
      - White background
-
-     It is used by BOTH:
-     - Download QR
-     - Share QR
+     - Company logo included
      ========================================================= */
 
   const createQRBlob = async () => {
@@ -77,13 +68,15 @@ export default function QRModal({ card, onClose }) {
       throw new Error("QR code not found.");
     }
 
-    /* Clone SVG so we don't modify the visible QR */
+    /* -------------------------------------------------------
+       Clone visible QR
+       ------------------------------------------------------- */
 
     const clonedSvg = svg.cloneNode(true);
 
-    /* =======================================================
-       EMBED LOGO INTO SVG
-       ======================================================= */
+    /* -------------------------------------------------------
+       Get logo as embedded data
+       ------------------------------------------------------- */
 
     const logoDataUrl = await imageToDataUrl(aaryansLogo);
 
@@ -99,20 +92,33 @@ export default function QRModal({ card, onClose }) {
       );
     }
 
-    /* =======================================================
-       SET EXPLICIT SVG SIZE
-       ======================================================= */
+    /* -------------------------------------------------------
+       IMPORTANT
 
-    const size = 1000;
+       Keep original QR viewBox.
+
+       Do NOT replace the viewBox with 1000 x 1000.
+       ------------------------------------------------------- */
+
+    const originalViewBox = svg.getAttribute("viewBox");
+
+    if (originalViewBox) {
+      clonedSvg.setAttribute("viewBox", originalViewBox);
+    }
+
+    /* -------------------------------------------------------
+       Create large output
+       ------------------------------------------------------- */
+
+    const size = 1200;
 
     clonedSvg.setAttribute("width", size);
+
     clonedSvg.setAttribute("height", size);
 
-    clonedSvg.setAttribute("viewBox", "0 0 220 220");
-
-    /* =======================================================
-       SERIALIZE SVG
-       ======================================================= */
+    /* -------------------------------------------------------
+       Serialize SVG
+       ------------------------------------------------------- */
 
     const svgData = new XMLSerializer().serializeToString(clonedSvg);
 
@@ -122,9 +128,9 @@ export default function QRModal({ card, onClose }) {
 
     const svgUrl = URL.createObjectURL(svgBlob);
 
-    /* =======================================================
-       CONVERT SVG TO PNG
-       ======================================================= */
+    /* -------------------------------------------------------
+       Convert SVG → PNG
+       ------------------------------------------------------- */
 
     return await new Promise((resolve, reject) => {
       const img = new Image();
@@ -140,26 +146,40 @@ export default function QRModal({ card, onClose }) {
 
           if (!ctx) {
             URL.revokeObjectURL(svgUrl);
+
             reject(new Error("Canvas is not supported."));
+
             return;
           }
 
-          /* White background */
+          /* ===============================================
+               WHITE BACKGROUND
+               =============================================== */
 
           ctx.fillStyle = "#ffffff";
 
           ctx.fillRect(0, 0, size, size);
 
-          /* Draw QR + logo */
+          /* ===============================================
+               PERFECT CENTER
+
+               The QR image itself fills the entire
+               square canvas equally.
+               =============================================== */
 
           ctx.drawImage(img, 0, 0, size, size);
 
           URL.revokeObjectURL(svgUrl);
 
+          /* ===============================================
+               CREATE PNG
+               =============================================== */
+
           canvas.toBlob(
             (blob) => {
               if (!blob) {
                 reject(new Error("Unable to create QR image."));
+
                 return;
               }
 
@@ -170,6 +190,7 @@ export default function QRModal({ card, onClose }) {
           );
         } catch (error) {
           URL.revokeObjectURL(svgUrl);
+
           reject(error);
         }
       };
@@ -185,7 +206,7 @@ export default function QRModal({ card, onClose }) {
   };
 
   /* =========================================================
-     DOWNLOAD QR CODE
+     DOWNLOAD QR
      ========================================================= */
 
   const handleDownloadQR = async () => {
@@ -231,7 +252,17 @@ export default function QRModal({ card, onClose }) {
       );
 
       /* =====================================================
-         CHECK WHETHER DEVICE SUPPORTS FILE SHARING
+         EXACT SHARE MESSAGE
+         ===================================================== */
+
+      const shareMessage = `QR code for ${
+        card.fullName || "Business"
+      } Digit Card.`;
+
+      /* =====================================================
+         SHARE IMAGE
+
+         The actual QR PNG is shared.
          ===================================================== */
 
       if (
@@ -242,9 +273,9 @@ export default function QRModal({ card, onClose }) {
         })
       ) {
         await navigator.share({
-          title: `${card.fullName || "Business"} Digital Card`,
+          title: shareMessage,
 
-          text: `QR code for ${card.fullName || "this"} digital business card.`,
+          text: shareMessage,
 
           files: [file],
         });
@@ -255,8 +286,8 @@ export default function QRModal({ card, onClose }) {
       /* =====================================================
          FALLBACK
 
-         If browser doesn't support sharing image files,
-         download the QR instead of sharing the long URL.
+         Browser does not support image sharing.
+         Download the actual QR instead.
          ===================================================== */
 
       const downloadUrl = URL.createObjectURL(qrBlob);
@@ -278,7 +309,7 @@ export default function QRModal({ card, onClose }) {
       }, 1000);
 
       console.log(
-        "This browser does not support image sharing. QR downloaded instead.",
+        "Image sharing is not supported by this browser. QR downloaded instead.",
       );
     } catch (error) {
       console.error("QR sharing failed:", error);
@@ -356,7 +387,7 @@ export default function QRModal({ card, onClose }) {
             <X className="h-4 w-4" />
           </button>
 
-          {/* SUCCESS ICON */}
+          {/* SUCCESS */}
 
           <div
             className="
@@ -437,7 +468,7 @@ export default function QRModal({ card, onClose }) {
               "
             >
               {/* =================================================
-                  QR CODE + HORIZONTAL COMPANY LOGO
+                  QR CODE + COMPANY LOGO
                   ================================================= */}
 
               <QRCodeSVG
@@ -456,7 +487,7 @@ export default function QRModal({ card, onClose }) {
                   width: 72,
                   height: 44,
 
-                  /* Clear area around logo */
+                  /* Clear QR modules around logo */
 
                   excavate: true,
                 }}
@@ -495,7 +526,7 @@ export default function QRModal({ card, onClose }) {
               ================================================= */}
 
           <div className="mt-3 grid grid-cols-2 gap-2.5">
-            {/* DOWNLOAD QR */}
+            {/* DOWNLOAD */}
 
             <button
               type="button"
@@ -521,7 +552,7 @@ export default function QRModal({ card, onClose }) {
               Download QR
             </button>
 
-            {/* SHARE QR */}
+            {/* SHARE */}
 
             <button
               type="button"
