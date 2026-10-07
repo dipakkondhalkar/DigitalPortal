@@ -71,7 +71,6 @@ export default function ViewCardModal({ card, onClose }) {
 
   /* =========================================================
      CREATE QR PNG
-
      SAME QR AS PREVIEW
      SAME LOGO
      SAME URL
@@ -117,9 +116,7 @@ export default function ViewCardModal({ card, onClose }) {
     const finalSize = 1200;
 
     clonedSvg.setAttribute("width", finalSize);
-
     clonedSvg.setAttribute("height", finalSize);
-
     clonedSvg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
 
     const svgData = new XMLSerializer().serializeToString(clonedSvg);
@@ -243,8 +240,8 @@ export default function ViewCardModal({ card, onClose }) {
       } Digit Card.`;
 
       /* ===================================================
-           ACTUAL IMAGE SHARE
-           =================================================== */
+         ACTUAL IMAGE SHARE
+         =================================================== */
 
       if (
         navigator.share &&
@@ -263,8 +260,8 @@ export default function ViewCardModal({ card, onClose }) {
       }
 
       /* ===================================================
-           FALLBACK DOWNLOAD
-           =================================================== */
+         FALLBACK DOWNLOAD
+         =================================================== */
 
       const downloadUrl = URL.createObjectURL(pngBlob);
 
@@ -332,7 +329,7 @@ export default function ViewCardModal({ card, onClose }) {
         items-center
         justify-center
         bg-black/70
-        p-3
+        p-2
         sm:p-5
         backdrop-blur-sm
       "
@@ -345,14 +342,16 @@ export default function ViewCardModal({ card, onClose }) {
         className="
           relative
           flex
-          max-h-[94vh]
+          max-h-[96vh]
           w-full
           max-w-5xl
           flex-col
           overflow-hidden
-          rounded-3xl
+          rounded-2xl
           bg-white
           shadow-2xl
+
+          sm:rounded-3xl
         "
       >
         {/* ===================================================
@@ -365,12 +364,12 @@ export default function ViewCardModal({ card, onClose }) {
           aria-label="Close"
           className="
             absolute
-            right-4
-            top-4
+            right-3
+            top-3
             z-30
             flex
-            h-10
-            w-10
+            h-9
+            w-9
             items-center
             justify-center
             rounded-full
@@ -383,6 +382,11 @@ export default function ViewCardModal({ card, onClose }) {
             hover:bg-slate-100
             hover:text-slate-800
             active:scale-95
+
+            sm:right-4
+            sm:top-4
+            sm:h-10
+            sm:w-10
           "
         >
           <X className="h-5 w-5" />
@@ -398,17 +402,20 @@ export default function ViewCardModal({ card, onClose }) {
             border-b
             border-slate-200
             bg-white
-            px-5
-            py-5
+            px-4
+            py-4
+
             sm:px-8
+            sm:py-5
           "
         >
           <h2
             className="
               text-center
-              text-xl
+              text-lg
               font-bold
               text-slate-800
+
               sm:text-2xl
             "
           >
@@ -419,8 +426,10 @@ export default function ViewCardModal({ card, onClose }) {
             className="
               mt-1
               text-center
-              text-sm
+              text-xs
               text-slate-500
+
+              sm:text-sm
             "
           >
             Preview your digital card and share it using the QR code.
@@ -444,15 +453,22 @@ export default function ViewCardModal({ card, onClose }) {
               min-h-full
               w-full
               grid-cols-1
-              items-center
+              items-start
               justify-items-center
-              gap-8
-              px-5
-              py-8
+
+              gap-4
+              px-4
+              py-5
+
+              sm:gap-6
               sm:px-8
+              sm:py-7
+
               md:grid-cols-2
+              md:items-center
               md:gap-8
-              lg:gap-8
+
+              lg:gap-10
               lg:px-10
               lg:py-8
             "
@@ -467,25 +483,21 @@ export default function ViewCardModal({ card, onClose }) {
                 w-full
                 items-center
                 justify-center
-                self-center
               "
             >
               <div
                 className="
-                  flex
                   w-full
-                  items-center
-                  justify-center
+                  max-w-[330px]
+
+                  sm:max-w-[340px]
+
+                  md:max-w-[300px]
+
+                  lg:max-w-[300px]
                 "
               >
-                <div
-                  className="
-                    w-full
-                    max-w-[350px]
-                  "
-                >
-                  <BusinessCard card={card} />
-                </div>
+                <BusinessCard card={card} />
               </div>
             </div>
 
@@ -499,20 +511,27 @@ export default function ViewCardModal({ card, onClose }) {
                 w-full
                 items-center
                 justify-center
-                self-center
               "
             >
               <div
                 className="
                   w-full
-                  max-w-[350px]
-                  rounded-3xl
+                  max-w-[330px]
+                  rounded-2xl
                   border
                   border-slate-200
                   bg-slate-50
-                  p-5
+                  p-4
                   shadow-sm
-                  sm:p-6
+
+                  sm:max-w-[340px]
+                  sm:rounded-3xl
+                  sm:p-5
+
+                  md:max-w-[320px]
+
+                  lg:max-w-[340px]
+                  lg:p-6
                 "
               >
                 {/* =============================================
@@ -521,15 +540,19 @@ export default function ViewCardModal({ card, onClose }) {
 
                 <div
                   className="
-                    mb-5
+                    mb-3
                     text-center
+
+                    sm:mb-5
                   "
                 >
                   <h3
                     className="
-                      text-lg
+                      text-base
                       font-bold
                       text-slate-800
+
+                      sm:text-lg
                     "
                   >
                     Scan to View Card
@@ -540,9 +563,12 @@ export default function ViewCardModal({ card, onClose }) {
                       mx-auto
                       mt-1
                       max-w-[300px]
-                      text-xs
-                      leading-5
+                      text-[10px]
+                      leading-4
                       text-slate-500
+
+                      sm:text-xs
+                      sm:leading-5
                     "
                   >
                     Scan this QR code with any phone to open the digital card.
@@ -559,15 +585,19 @@ export default function ViewCardModal({ card, onClose }) {
                     flex
                     aspect-square
                     w-full
-                    max-w-[250px]
+                    max-w-[230px]
                     items-center
                     justify-center
-                    rounded-[22px]
+                    rounded-[18px]
                     border
                     border-slate-200
-                    bg-slate-50
-                    p-3
+                    bg-white
+                    p-2
                     shadow-inner
+
+                    sm:max-w-[250px]
+                    sm:rounded-[22px]
+                    sm:p-3
                   "
                 >
                   <div
@@ -579,10 +609,12 @@ export default function ViewCardModal({ card, onClose }) {
                       items-center
                       justify-center
                       overflow-hidden
-                      rounded-[16px]
+                      rounded-[12px]
                       bg-white
                       p-0
                       shadow-sm
+
+                      sm:rounded-[16px]
                     "
                   >
                     <QRCodeSVG
@@ -609,7 +641,7 @@ export default function ViewCardModal({ card, onClose }) {
                 <div
                   className="
                     mx-auto
-                    mt-3
+                    mt-2.5
                     flex
                     max-w-[250px]
                     items-center
@@ -617,7 +649,10 @@ export default function ViewCardModal({ card, onClose }) {
                     rounded-lg
                     bg-[#f7f0e5]
                     px-3
-                    py-2
+                    py-1.5
+
+                    sm:mt-3
+                    sm:py-2
                   "
                 >
                   <p
@@ -626,6 +661,8 @@ export default function ViewCardModal({ card, onClose }) {
                       text-[9px]
                       font-medium
                       text-[#601D1E]
+
+                      sm:text-[10px]
                     "
                   >
                     Scan with any phone to open the card
@@ -638,10 +675,13 @@ export default function ViewCardModal({ card, onClose }) {
 
                 <div
                   className="
-                    mt-3
+                    mt-2.5
                     grid
                     grid-cols-2
-                    gap-2.5
+                    gap-2
+
+                    sm:mt-3
+                    sm:gap-2.5
                   "
                 >
                   {/* DOWNLOAD */}
@@ -654,12 +694,12 @@ export default function ViewCardModal({ card, onClose }) {
                       flex
                       items-center
                       justify-center
-                      gap-1.5
+                      gap-1
                       rounded-xl
                       bg-[#601D1E]
-                      px-4
-                      py-3
-                      text-sm
+                      px-3
+                      py-2.5
+                      text-xs
                       font-semibold
                       text-white
                       shadow-sm
@@ -668,9 +708,14 @@ export default function ViewCardModal({ card, onClose }) {
                       active:scale-95
                       disabled:cursor-not-allowed
                       disabled:opacity-60
+
+                      sm:gap-1.5
+                      sm:px-4
+                      sm:py-3
+                      sm:text-sm
                     "
                   >
-                    <Download className="h-4 w-4" />
+                    <Download className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
 
                     {downloading ? "Downloading..." : "Download"}
                   </button>
@@ -685,14 +730,14 @@ export default function ViewCardModal({ card, onClose }) {
                       flex
                       items-center
                       justify-center
-                      gap-1.5
+                      gap-1
                       rounded-xl
                       border
                       border-[#601D1E]/20
                       bg-[#601D1E]/5
-                      px-4
-                      py-3
-                      text-sm
+                      px-3
+                      py-2.5
+                      text-xs
                       font-semibold
                       text-[#601D1E]
                       transition
@@ -700,9 +745,14 @@ export default function ViewCardModal({ card, onClose }) {
                       active:scale-95
                       disabled:cursor-not-allowed
                       disabled:opacity-60
+
+                      sm:gap-1.5
+                      sm:px-4
+                      sm:py-3
+                      sm:text-sm
                     "
                   >
-                    <Share2 className="h-4 w-4" />
+                    <Share2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
 
                     {sharing ? "Sharing..." : "Share"}
                   </button>
@@ -712,7 +762,7 @@ export default function ViewCardModal({ card, onClose }) {
                     CARD LINK
                     ============================================= */}
 
-                <div className="mt-5">
+                <div className="mt-4 sm:mt-5">
                   <div
                     className="
                       mb-2
@@ -723,9 +773,11 @@ export default function ViewCardModal({ card, onClose }) {
                   >
                     <span
                       className="
-                        text-xs
+                        text-[11px]
                         font-semibold
                         text-slate-600
+
+                        sm:text-xs
                       "
                     >
                       Card Link
@@ -746,7 +798,7 @@ export default function ViewCardModal({ card, onClose }) {
                   >
                     <Link
                       className="
-                        ml-2
+                        ml-1
                         h-4
                         w-4
                         shrink-0
@@ -764,10 +816,12 @@ export default function ViewCardModal({ card, onClose }) {
                         flex-1
                         bg-transparent
                         px-1
-                        text-xs
+                        text-[10px]
                         font-medium
                         text-slate-700
                         outline-none
+
+                        sm:text-xs
                       "
                     />
 
@@ -778,14 +832,18 @@ export default function ViewCardModal({ card, onClose }) {
                       aria-label={copied ? "Copied" : "Copy card link"}
                       className={`
                         flex
-                        h-9
-                        w-9
+                        h-8
+                        w-8
                         shrink-0
                         items-center
                         justify-center
                         rounded-lg
                         transition-all
                         active:scale-90
+
+                        sm:h-9
+                        sm:w-9
+
                         ${
                           copied
                             ? "bg-green-100 text-green-600"
@@ -809,10 +867,13 @@ export default function ViewCardModal({ card, onClose }) {
 
                   <div
                     className="
-                      mt-2
+                      mt-1.5
                       text-center
-                      text-[10px]
+                      text-[9px]
                       text-slate-400
+
+                      sm:mt-2
+                      sm:text-[10px]
                     "
                   >
                     Complete card link
