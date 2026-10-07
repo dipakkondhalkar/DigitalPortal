@@ -330,7 +330,7 @@ export default function ViewCardModal({ card, onClose }) {
         justify-center
         bg-black/70
         p-2
-        sm:p-5
+        sm:p-4
         backdrop-blur-sm
       "
     >
@@ -449,28 +449,30 @@ export default function ViewCardModal({ card, onClose }) {
         >
           <div
             className="
+              mx-auto
               grid
-              min-h-full
               w-full
+              max-w-[760px]
               grid-cols-1
               items-start
               justify-items-center
 
               gap-4
-              px-4
+              px-3
               py-5
 
-              sm:gap-6
-              sm:px-8
-              sm:py-7
+              sm:gap-5
+              sm:px-5
+              sm:py-6
 
-              md:grid-cols-2
-              md:items-center
-              md:gap-8
+              md:grid-cols-[300px_340px]
+              md:justify-center
+              md:gap-5
+              md:px-2
+              md:py-7
 
-              lg:gap-10
-              lg:px-10
-              lg:py-8
+              lg:grid-cols-[310px_350px]
+              lg:gap-6
             "
           >
             {/* =================================================
@@ -481,7 +483,7 @@ export default function ViewCardModal({ card, onClose }) {
               className="
                 flex
                 w-full
-                items-center
+                items-start
                 justify-center
               "
             >
@@ -494,7 +496,7 @@ export default function ViewCardModal({ card, onClose }) {
 
                   md:max-w-[300px]
 
-                  lg:max-w-[300px]
+                  lg:max-w-[310px]
                 "
               >
                 <BusinessCard card={card} />
@@ -509,7 +511,7 @@ export default function ViewCardModal({ card, onClose }) {
               className="
                 flex
                 w-full
-                items-center
+                items-start
                 justify-center
               "
             >
@@ -528,9 +530,8 @@ export default function ViewCardModal({ card, onClose }) {
                   sm:rounded-3xl
                   sm:p-5
 
-                  md:max-w-[320px]
+                  md:max-w-[340px]
 
-                  lg:max-w-[340px]
                   lg:p-6
                 "
               >
@@ -543,7 +544,7 @@ export default function ViewCardModal({ card, onClose }) {
                     mb-3
                     text-center
 
-                    sm:mb-5
+                    sm:mb-4
                   "
                 >
                   <h3
