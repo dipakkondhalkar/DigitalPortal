@@ -23,8 +23,6 @@ export default function ViewCardModal({ card, onClose }) {
 
   /* =========================================================
      ORIGINAL WORKING CARD URL
-
-     KEEP THIS EXACT URL SYSTEM.
      ========================================================= */
 
   const cardUrl = createCardUrl(card);
@@ -45,8 +43,6 @@ export default function ViewCardModal({ card, onClose }) {
 
   /* =========================================================
      CONVERT LOGO TO DATA URL
-
-     Used when creating the downloadable QR image.
      ========================================================= */
 
   const imageToDataUrl = async (imageUrl) => {
@@ -74,10 +70,13 @@ export default function ViewCardModal({ card, onClose }) {
   /* =========================================================
      CREATE QR PNG
 
-     Uses the SAME QR shown in the preview:
+     The downloaded/shared image uses the SAME QR
+     displayed in the Preview.
+
+     QR:
      - Same URL
      - Same Aaryans logo
-     - Same QR color
+     - Same color
      - Same logo size
      - Same error correction
      ========================================================= */
@@ -117,11 +116,11 @@ export default function ViewCardModal({ card, onClose }) {
        SVG SIZE
        ======================================================= */
 
-    const size = 1000;
+    const svgSize = 1000;
 
-    clonedSvg.setAttribute("width", size);
+    clonedSvg.setAttribute("width", svgSize);
 
-    clonedSvg.setAttribute("height", size);
+    clonedSvg.setAttribute("height", svgSize);
 
     clonedSvg.setAttribute("viewBox", "0 0 220 220");
 
@@ -180,7 +179,7 @@ export default function ViewCardModal({ card, onClose }) {
       /* =====================================================
          CENTER QR
 
-         Equal margin on all sides.
+         Equal margin on every side.
          ===================================================== */
 
       const qrSize = 1080;
@@ -252,7 +251,11 @@ export default function ViewCardModal({ card, onClose }) {
   /* =========================================================
      SHARE QR
 
-     Shares actual PNG image.
+     Actual PNG image is shared.
+
+     Message:
+
+     QR code for Dipak Kondhalkar Digit Card.
      ========================================================= */
 
   const handleShare = async () => {
@@ -383,7 +386,7 @@ export default function ViewCardModal({ card, onClose }) {
         "
       >
         {/* ===================================================
-            CLOSE
+            CLOSE BUTTON
             =================================================== */}
 
         <button
@@ -543,50 +546,62 @@ export default function ViewCardModal({ card, onClose }) {
               {/* =============================================
                   QR OUTER BOX
 
-                  ONLY THE FITTING IS CHANGED.
+                  250 x 250
+
+                  QR is centered inside this box.
                   ============================================= */}
 
               <div
                 className="
                   mx-auto
-                  aspect-square
-                  w-full
-                  max-w-[250px]
+                  flex
+                  h-[250px]
+                  w-[250px]
+                  items-center
+                  justify-center
                   rounded-[22px]
                   border
                   border-slate-200
                   bg-slate-50
-                  p-2
+                  p-3
                   shadow-inner
                 "
               >
-                {/* ===========================================
+                {/* =========================================
                     QR INNER BOX
-                    =========================================== */}
+
+                    220 x 220
+
+                    Because the outer box is flex-centered,
+                    the QR is exactly in the middle.
+                    ========================================= */}
 
                 <div
                   ref={qrRef}
                   className="
-                    relative
-                    mx-auto
                     flex
-                    aspect-square
-                    w-full
+                    h-[220px]
+                    w-[220px]
+                    shrink-0
                     items-center
                     justify-center
                     overflow-hidden
                     rounded-[16px]
                     bg-white
-                    p-3
+                    p-0
                     shadow-sm
                   "
                 >
-                  {/* =========================================
-                      QR CODE
+                  {/* =======================================
+                      EXACT QR CODE
 
-                      Same Aaryans logo.
-                      Now fits inside the box properly.
-                      ========================================= */}
+                      Fixed 220 x 220.
+                      No w-full.
+                      No h-auto.
+
+                      This prevents it from moving
+                      to a corner.
+                      ======================================= */}
 
                   <QRCodeSVG
                     value={cardUrl}
@@ -595,12 +610,6 @@ export default function ViewCardModal({ card, onClose }) {
                     includeMargin={true}
                     fgColor="#601D1E"
                     bgColor="#ffffff"
-                    className="
-                      block
-                      h-auto
-                      w-full
-                      max-w-full
-                    "
                     imageSettings={{
                       src: aaryansLogo,
                       width: 72,
