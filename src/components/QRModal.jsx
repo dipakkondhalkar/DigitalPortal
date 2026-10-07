@@ -18,7 +18,7 @@ export default function QRModal({ card, onClose }) {
   /* =========================================================
      OLD WORKING QR URL
 
-     This keeps:
+     Example:
      /card/card-id?data=FULL_CARD_DATA
 
      No database required.
@@ -59,7 +59,7 @@ export default function QRModal({ card, onClose }) {
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, size, size);
 
-        /* Draw QR with logo */
+        /* Draw QR + company logo */
         ctx.drawImage(img, 0, 0, size, size);
 
         const pngUrl = canvas.toDataURL("image/png");
@@ -67,6 +67,7 @@ export default function QRModal({ card, onClose }) {
         const link = document.createElement("a");
 
         link.href = pngUrl;
+
         link.download = `${card.fullName || "business-card"}-QR.png`;
 
         document.body.appendChild(link);
@@ -262,7 +263,10 @@ export default function QRModal({ card, onClose }) {
               "
             >
               {/* =================================================
-                  QR CODE + ACTUAL COMPANY LOGO
+                  QR CODE
+
+                  Actual company logo is placed in the
+                  center of the QR.
                   ================================================= */}
 
               <QRCodeSVG
@@ -277,8 +281,12 @@ export default function QRModal({ card, onClose }) {
                   src: aaryansLogo,
                   x: undefined,
                   y: undefined,
-                  height: 48,
-                  width: 48,
+
+                  /* Horizontally wider logo */
+                  width: 72,
+                  height: 44,
+
+                  /* Removes QR modules underneath logo */
                   excavate: true,
                 }}
               />
