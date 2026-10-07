@@ -16,7 +16,8 @@ export default function BusinessCard({ card }) {
       className="
         business-card-font
         w-full
-        max-w-[330px]
+        max-w-[300px]
+        md:max-w-[300px]
         overflow-hidden
         rounded-[22px]
         border
@@ -76,18 +77,32 @@ export default function BusinessCard({ card }) {
             GOLD DIVIDER
             ================================================= */}
 
-        <div className="mx-auto mt-3 flex items-center justify-center gap-2">
+        <div
+          className="
+            mx-auto
+            mt-3
+            flex
+            items-center
+            justify-center
+            gap-2
+          "
+        >
           <span className="h-px w-7 bg-[#E2BA6E]/60" />
 
-          <span className="h-1.5 w-1.5 rotate-45 bg-[#E2BA6E]" />
+          <span
+            className="
+              h-1.5
+              w-1.5
+              rotate-45
+              bg-[#E2BA6E]
+            "
+          />
 
           <span className="h-px w-7 bg-[#E2BA6E]/60" />
         </div>
 
         {/* =================================================
             WHITE NAME + DESIGNATION BOX
-
-            Brown surrounds this box.
             ================================================= */}
 
         <div
@@ -101,23 +116,23 @@ export default function BusinessCard({ card }) {
             shadow-[0_10px_25px_rgba(0,0,0,0.18)]
           "
         >
-          {/* Name */}
+          {/* NAME */}
 
           <h1
             className="
               break-words
-              text-[22px]
+              text-[21px]
               font-extrabold
               uppercase
               leading-tight
-              tracking-[0.4px]
+              tracking-[0.3px]
               text-[#681F22]
             "
           >
             {card.fullName}
           </h1>
 
-          {/* Small gold divider */}
+          {/* GOLD DIVIDER */}
 
           <div
             className="
@@ -130,12 +145,12 @@ export default function BusinessCard({ card }) {
             "
           />
 
-          {/* Designation */}
+          {/* DESIGNATION */}
 
           <p
             className="
               mt-2
-              text-[15px]
+              text-[14px]
               font-medium
               text-[#4A4A4A]
             "
@@ -152,8 +167,8 @@ export default function BusinessCard({ card }) {
       <div
         className="
           bg-[#FAF8F5]
-          px-5
-          py-6
+          px-4
+          py-5
         "
       >
         <div className="space-y-4">
@@ -171,7 +186,7 @@ export default function BusinessCard({ card }) {
                 no-underline
               "
             >
-              {/* Icon */}
+              {/* EMAIL ICON */}
 
               <div
                 className="
@@ -186,16 +201,16 @@ export default function BusinessCard({ card }) {
                   text-[#E2BA6E]
                 "
               >
-                <Mail className="h-[16px] w-[16px]" strokeWidth={2} />
+                <Mail className="h-[15px] w-[15px]" strokeWidth={2} />
               </div>
 
-              {/* Value */}
+              {/* EMAIL */}
 
               <span
                 className="
                   min-w-0
                   break-all
-                  text-[13px]
+                  text-[12px]
                   font-medium
                   leading-5
                   text-[#444444]
@@ -220,7 +235,7 @@ export default function BusinessCard({ card }) {
                 no-underline
               "
             >
-              {/* Icon */}
+              {/* PHONE ICON */}
 
               <div
                 className="
@@ -235,14 +250,14 @@ export default function BusinessCard({ card }) {
                   text-[#E2BA6E]
                 "
               >
-                <Phone className="h-[16px] w-[16px]" strokeWidth={2} />
+                <Phone className="h-[15px] w-[15px]" strokeWidth={2} />
               </div>
 
-              {/* Value */}
+              {/* PHONE */}
 
               <span
                 className="
-                  text-[14px]
+                  text-[13px]
                   font-medium
                   leading-5
                   text-[#444444]
@@ -265,7 +280,7 @@ export default function BusinessCard({ card }) {
                 gap-3
               "
             >
-              {/* Icon */}
+              {/* LOCATION ICON */}
 
               <div
                 className="
@@ -281,16 +296,16 @@ export default function BusinessCard({ card }) {
                   text-[#E2BA6E]
                 "
               >
-                <MapPin className="h-[16px] w-[16px]" strokeWidth={2} />
+                <MapPin className="h-[15px] w-[15px]" strokeWidth={2} />
               </div>
 
-              {/* Value */}
+              {/* ADDRESS */}
 
               <span
                 className="
                   min-w-0
                   whitespace-pre-line
-                  text-[13px]
+                  text-[12px]
                   font-medium
                   leading-5
                   text-[#444444]
@@ -316,7 +331,7 @@ export default function BusinessCard({ card }) {
               no-underline
             "
           >
-            {/* Icon */}
+            {/* WEBSITE ICON */}
 
             <div
               className="
@@ -331,14 +346,14 @@ export default function BusinessCard({ card }) {
                 text-[#E2BA6E]
               "
             >
-              <Globe className="h-[16px] w-[16px]" strokeWidth={2} />
+              <Globe className="h-[15px] w-[15px]" strokeWidth={2} />
             </div>
 
-            {/* Value */}
+            {/* WEBSITE */}
 
             <span
               className="
-                text-[13px]
+                text-[12px]
                 font-medium
                 leading-5
                 text-[#444444]
@@ -353,7 +368,14 @@ export default function BusinessCard({ card }) {
             BOTTOM DECORATION
             ================================================= */}
 
-        <div className="mt-5 flex items-center gap-3">
+        <div
+          className="
+            mt-5
+            flex
+            items-center
+            gap-3
+          "
+        >
           <div className="h-px flex-1 bg-[#ddd3c8]" />
 
           <div
