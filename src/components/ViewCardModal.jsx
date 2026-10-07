@@ -70,7 +70,7 @@ export default function ViewCardModal({ card, onClose }) {
   };
 
   /* =========================================================
-     CREATE FINAL QR PNG
+     CREATE QR PNG
 
      SAME QR AS PREVIEW
      SAME LOGO
@@ -100,7 +100,9 @@ export default function ViewCardModal({ card, onClose }) {
       );
     }
 
-    /* Keep original QR viewBox */
+    /* =======================================================
+       KEEP ORIGINAL QR VIEWBOX
+       ======================================================= */
 
     const originalViewBox = svg.getAttribute("viewBox");
 
@@ -108,7 +110,9 @@ export default function ViewCardModal({ card, onClose }) {
       clonedSvg.setAttribute("viewBox", originalViewBox);
     }
 
-    /* Final square PNG */
+    /* =======================================================
+       FINAL SQUARE IMAGE
+       ======================================================= */
 
     const finalSize = 1200;
 
@@ -146,17 +150,25 @@ export default function ViewCardModal({ card, onClose }) {
         throw new Error("Canvas is not supported.");
       }
 
-      /* White background */
+      /* =====================================================
+         WHITE BACKGROUND
+         ===================================================== */
 
       context.fillStyle = "#ffffff";
 
       context.fillRect(0, 0, finalSize, finalSize);
 
-      /* Exact QR */
+      /* =====================================================
+         DRAW EXACT QR
+         ===================================================== */
 
       context.imageSmoothingEnabled = false;
 
       context.drawImage(image, 0, 0, finalSize, finalSize);
+
+      /* =====================================================
+         CREATE PNG
+         ===================================================== */
 
       const pngBlob = await new Promise((resolve) => {
         canvas.toBlob(resolve, "image/png", 1);
@@ -211,7 +223,7 @@ export default function ViewCardModal({ card, onClose }) {
   };
 
   /* =========================================================
-     SHARE QR IMAGE
+     SHARE QR
      ========================================================= */
 
   const handleShare = async () => {
@@ -230,6 +242,10 @@ export default function ViewCardModal({ card, onClose }) {
         card.fullName || "Business"
       } Digit Card.`;
 
+      /* ===================================================
+           ACTUAL IMAGE SHARE
+           =================================================== */
+
       if (
         navigator.share &&
         navigator.canShare &&
@@ -246,7 +262,9 @@ export default function ViewCardModal({ card, onClose }) {
         return;
       }
 
-      /* Browser fallback */
+      /* ===================================================
+           FALLBACK DOWNLOAD
+           =================================================== */
 
       const downloadUrl = URL.createObjectURL(pngBlob);
 
@@ -320,9 +338,7 @@ export default function ViewCardModal({ card, onClose }) {
       "
     >
       {/* =====================================================
-          MAIN MODAL
-
-          CENTERED IN SCREEN
+          MODAL
           ===================================================== */}
 
       <div
@@ -331,7 +347,7 @@ export default function ViewCardModal({ card, onClose }) {
           flex
           max-h-[94vh]
           w-full
-          max-w-6xl
+          max-w-5xl
           flex-col
           overflow-hidden
           rounded-3xl
@@ -412,10 +428,7 @@ export default function ViewCardModal({ card, onClose }) {
         </div>
 
         {/* ===================================================
-            MAIN CONTENT
-
-            IMPORTANT CHANGE:
-            ITEMS ARE NOW PROPERLY CENTERED.
+            SCROLLABLE CONTENT
             =================================================== */}
 
         <div
@@ -438,16 +451,14 @@ export default function ViewCardModal({ card, onClose }) {
               py-8
               sm:px-8
               md:grid-cols-2
-              md:gap-10
-              lg:gap-14
-              lg:px-12
-              lg:py-10
+              md:gap-8
+              lg:gap-8
+              lg:px-10
+              lg:py-8
             "
           >
             {/* =================================================
-                BUSINESS CARD PREVIEW
-
-                CENTERED
+                BUSINESS CARD
                 ================================================= */}
 
             <div
@@ -470,7 +481,7 @@ export default function ViewCardModal({ card, onClose }) {
                 <div
                   className="
                     w-full
-                    max-w-[420px]
+                    max-w-[350px]
                   "
                 >
                   <BusinessCard card={card} />
@@ -480,8 +491,6 @@ export default function ViewCardModal({ card, onClose }) {
 
             {/* =================================================
                 QR SECTION
-
-                CENTERED
                 ================================================= */}
 
             <div
@@ -496,7 +505,7 @@ export default function ViewCardModal({ card, onClose }) {
               <div
                 className="
                   w-full
-                  max-w-[390px]
+                  max-w-[350px]
                   rounded-3xl
                   border
                   border-slate-200
@@ -541,7 +550,7 @@ export default function ViewCardModal({ card, onClose }) {
                 </div>
 
                 {/* =============================================
-                    QR OUTER BOX
+                    QR BOX
                     ============================================= */}
 
                 <div
@@ -550,7 +559,7 @@ export default function ViewCardModal({ card, onClose }) {
                     flex
                     aspect-square
                     w-full
-                    max-w-[280px]
+                    max-w-[250px]
                     items-center
                     justify-center
                     rounded-[22px]
@@ -561,10 +570,6 @@ export default function ViewCardModal({ card, onClose }) {
                     shadow-inner
                   "
                 >
-                  {/* =========================================
-                      QR INNER BOX
-                      ========================================= */}
-
                   <div
                     ref={qrRef}
                     className="
@@ -580,10 +585,6 @@ export default function ViewCardModal({ card, onClose }) {
                       shadow-sm
                     "
                   >
-                    {/* =======================================
-                        SAME QR
-                        ======================================= */}
-
                     <QRCodeSVG
                       value={cardUrl}
                       size={220}
@@ -610,7 +611,7 @@ export default function ViewCardModal({ card, onClose }) {
                     mx-auto
                     mt-3
                     flex
-                    max-w-[280px]
+                    max-w-[250px]
                     items-center
                     justify-center
                     rounded-lg
