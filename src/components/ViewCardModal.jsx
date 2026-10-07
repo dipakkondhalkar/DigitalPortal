@@ -1,20 +1,15 @@
-import { useRef, useState } from "react";
-import { QRCodeSVG } from "qrcode.react";
-
-import { X, Download, Share2, Link, Check, Copy } from "lucide-react";
-
-import aaryansLogo from "../assets/image.png";
-
+import { useState } from "react";
+import { Download, Share2, X, Link, Check, Copy } from "lucide-react";
 import BusinessCard from "./BusinessCard";
 import { createCardUrl } from "../utils/card";
+import aaryansLogo from "../assets/image.png";
+import QRCode from "qrcode";
 
 /* =========================================================
    VIEW CARD MODAL
    ========================================================= */
 
 export default function ViewCardModal({ card, onClose }) {
-  const qrRef = useRef(null);
-
   const [copied, setCopied] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const [sharing, setSharing] = useState(false);
@@ -42,7 +37,7 @@ export default function ViewCardModal({ card, onClose }) {
   };
 
   /* =========================================================
-     CONVERT LOGO TO DATA URL
+     IMAGE TO DATA URL
      ========================================================= */
 
   const imageToDataUrl = async (imageUrl) => {
@@ -68,146 +63,176 @@ export default function ViewCardModal({ card, onClose }) {
   };
 
   /* =========================================================
-     CREATE QR PNG
+     LOAD IMAGE
+     ========================================================= */
 
-     The downloaded/shared image uses the SAME QR
-     displayed in the Preview.
+  const loadImage = async (src) => {
+    return await new Promise((resolve, reject) => {
+      const image = new Image();
+
+      image.onload = () => resolve(image);
+      image.onerror = reject;
+
+      image.src = src;
+    });
+  };
+
+  /* =========================================================
+     CREATE QR IMAGE
+     
+     IMPORTANT:
+
+     Final image:
+     1200 x 1200
 
      QR:
-     - Same URL
-     - Same Aaryans logo
-     - Same color
-     - Same logo size
-     - Same error correction
+     1000 x 1000
+
+     Equal:
+     100px left
+     100px right
+     100px top
+     100px bottom
+
+     Therefore QR is perfectly centered.
      ========================================================= */
 
   const createQRImage = async () => {
-    const svg = qrRef.current?.querySelector("svg");
+    /* =======================================================
+       FINAL IMAGE
+       ======================================================= */
 
-    if (!svg) {
-      throw new Error("QR code not found.");
+    const finalSize = 1200;
+
+    const canvas = document.createElement("canvas");
+
+    canvas.width = finalSize;
+    canvas.height = finalSize;
+
+    const context = canvas.getContext("2d");
+
+    if (!context) {
+      throw new Error("Canvas is not supported.");
     }
 
     /* =======================================================
-       CLONE QR SVG
+       WHITE BACKGROUND
        ======================================================= */
 
-    const clonedSvg = svg.cloneNode(true);
+    context.fillStyle = "#ffffff";
+
+    context.fillRect(0, 0, finalSize, finalSize);
 
     /* =======================================================
-       EMBED AARYANS LOGO
+       QR SIZE
+
+       1000 x 1000
+
+       This leaves exactly 100px on every side.
+       ======================================================= */
+
+    const qrSize = 1000;
+
+    const qrX = (finalSize - qrSize) / 2;
+
+    const qrY = (finalSize - qrSize) / 2;
+
+    /* =======================================================
+       TEMPORARY QR CANVAS
+       ======================================================= */
+
+    const qrCanvas = document.createElement("canvas");
+
+    qrCanvas.width = qrSize;
+    qrCanvas.height = qrSize;
+
+    /* =======================================================
+       GENERATE QR
+
+       SAME CARD URL.
+
+       HIGH ERROR CORRECTION FOR LOGO.
+       ======================================================= */
+
+    await QRCode.toCanvas(qrCanvas, cardUrl, {
+      width: qrSize,
+      margin: 4,
+      errorCorrectionLevel: "H",
+
+      color: {
+        dark: "#601D1E",
+        light: "#FFFFFF",
+      },
+    });
+
+    /* =======================================================
+       DRAW QR EXACTLY IN CENTER
+
+       IMPORTANT:
+       Do NOT change these coordinates.
+       ======================================================= */
+
+    context.imageSmoothingEnabled = false;
+
+    context.drawImage(qrCanvas, qrX, qrY, qrSize, qrSize);
+
+    /* =======================================================
+       LOAD AARYANS LOGO
        ======================================================= */
 
     const logoDataUrl = await imageToDataUrl(aaryansLogo);
 
-    const imageElement = clonedSvg.querySelector("image");
-
-    if (imageElement) {
-      imageElement.setAttribute("href", logoDataUrl);
-
-      imageElement.setAttributeNS(
-        "http://www.w3.org/1999/xlink",
-        "xlink:href",
-        logoDataUrl,
-      );
-    }
+    const logo = await loadImage(logoDataUrl);
 
     /* =======================================================
-       SVG SIZE
+       LOGO WHITE BACKGROUND
+
+       Center of QR.
        ======================================================= */
 
-    const svgSize = 1000;
+    const logoBoxWidth = 330;
+    const logoBoxHeight = 200;
 
-    clonedSvg.setAttribute("width", svgSize);
+    const logoBoxX = (finalSize - logoBoxWidth) / 2;
 
-    clonedSvg.setAttribute("height", svgSize);
+    const logoBoxY = (finalSize - logoBoxHeight) / 2;
 
-    clonedSvg.setAttribute("viewBox", "0 0 220 220");
+    context.fillStyle = "#ffffff";
 
-    clonedSvg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    context.beginPath();
+
+    context.roundRect(logoBoxX, logoBoxY, logoBoxWidth, logoBoxHeight, 30);
+
+    context.fill();
 
     /* =======================================================
-       SERIALIZE SVG
+       DRAW AARYANS LOGO
+
+       Centered exactly.
        ======================================================= */
 
-    const svgData = new XMLSerializer().serializeToString(clonedSvg);
+    const logoWidth = 230;
+    const logoHeight = 140;
 
-    const svgBlob = new Blob([svgData], {
-      type: "image/svg+xml;charset=utf-8",
+    const logoX = (finalSize - logoWidth) / 2;
+
+    const logoY = (finalSize - logoHeight) / 2;
+
+    context.drawImage(logo, logoX, logoY, logoWidth, logoHeight);
+
+    /* =======================================================
+       CREATE FINAL PNG
+       ======================================================= */
+
+    const pngBlob = await new Promise((resolve) => {
+      canvas.toBlob(resolve, "image/png", 1);
     });
 
-    const svgUrl = URL.createObjectURL(svgBlob);
-
-    try {
-      /* =====================================================
-         LOAD SVG
-         ===================================================== */
-
-      const image = new Image();
-
-      await new Promise((resolve, reject) => {
-        image.onload = resolve;
-        image.onerror = reject;
-        image.src = svgUrl;
-      });
-
-      /* =====================================================
-         FINAL PNG
-         ===================================================== */
-
-      const finalSize = 1200;
-
-      const canvas = document.createElement("canvas");
-
-      canvas.width = finalSize;
-      canvas.height = finalSize;
-
-      const context = canvas.getContext("2d");
-
-      if (!context) {
-        throw new Error("Canvas is not supported.");
-      }
-
-      /* =====================================================
-         WHITE BACKGROUND
-         ===================================================== */
-
-      context.fillStyle = "#ffffff";
-
-      context.fillRect(0, 0, finalSize, finalSize);
-
-      /* =====================================================
-         CENTER QR
-
-         Equal margin on every side.
-         ===================================================== */
-
-      const qrSize = 1080;
-
-      const qrX = (finalSize - qrSize) / 2;
-
-      const qrY = (finalSize - qrSize) / 2;
-
-      context.imageSmoothingEnabled = false;
-
-      context.drawImage(image, qrX, qrY, qrSize, qrSize);
-
-      /* =====================================================
-         CREATE PNG
-         ===================================================== */
-
-      const pngBlob = await new Promise((resolve) => {
-        canvas.toBlob(resolve, "image/png", 1);
-      });
-
-      if (!pngBlob) {
-        throw new Error("Unable to create QR image.");
-      }
-
-      return pngBlob;
-    } finally {
-      URL.revokeObjectURL(svgUrl);
+    if (!pngBlob) {
+      throw new Error("Unable to create QR image.");
     }
+
+    return pngBlob;
   };
 
   /* =========================================================
@@ -253,7 +278,7 @@ export default function ViewCardModal({ card, onClose }) {
 
      Actual PNG image is shared.
 
-     Message:
+     Example message:
 
      QR code for Dipak Kondhalkar Digit Card.
      ========================================================= */
@@ -275,7 +300,7 @@ export default function ViewCardModal({ card, onClose }) {
       } Digit Card.`;
 
       /* =====================================================
-         ACTUAL IMAGE SHARE
+         SHARE ACTUAL IMAGE
          ===================================================== */
 
       if (
@@ -295,7 +320,9 @@ export default function ViewCardModal({ card, onClose }) {
       }
 
       /* =====================================================
-         FALLBACK DOWNLOAD
+         FALLBACK
+
+         Download actual QR image.
          ===================================================== */
 
       const url = URL.createObjectURL(pngBlob);
@@ -386,7 +413,7 @@ export default function ViewCardModal({ card, onClose }) {
         "
       >
         {/* ===================================================
-            CLOSE BUTTON
+            CLOSE
             =================================================== */}
 
         <button
@@ -454,7 +481,7 @@ export default function ViewCardModal({ card, onClose }) {
         </div>
 
         {/* ===================================================
-            CONTENT
+            MAIN CONTENT
             =================================================== */}
 
         <div
@@ -544,11 +571,11 @@ export default function ViewCardModal({ card, onClose }) {
               </div>
 
               {/* =============================================
-                  QR OUTER BOX
+                  QR PREVIEW BOX
 
                   250 x 250
 
-                  QR is centered inside this box.
+                  QR is EXACTLY CENTERED.
                   ============================================= */}
 
               <div
@@ -568,16 +595,14 @@ export default function ViewCardModal({ card, onClose }) {
                 "
               >
                 {/* =========================================
-                    QR INNER BOX
+                    QR
 
                     220 x 220
 
-                    Because the outer box is flex-centered,
-                    the QR is exactly in the middle.
+                    15px approximately on each side.
                     ========================================= */}
 
                 <div
-                  ref={qrRef}
                   className="
                     flex
                     h-[220px]
@@ -585,24 +610,12 @@ export default function ViewCardModal({ card, onClose }) {
                     shrink-0
                     items-center
                     justify-center
-                    overflow-hidden
                     rounded-[16px]
                     bg-white
                     p-0
                     shadow-sm
                   "
                 >
-                  {/* =======================================
-                      EXACT QR CODE
-
-                      Fixed 220 x 220.
-                      No w-full.
-                      No h-auto.
-
-                      This prevents it from moving
-                      to a corner.
-                      ======================================= */}
-
                   <QRCodeSVG
                     value={cardUrl}
                     size={220}
@@ -621,7 +634,7 @@ export default function ViewCardModal({ card, onClose }) {
               </div>
 
               {/* =============================================
-                  SCAN MESSAGE
+                  MESSAGE
                   ============================================= */}
 
               <div
@@ -632,7 +645,6 @@ export default function ViewCardModal({ card, onClose }) {
                   max-w-[250px]
                   items-center
                   justify-center
-                  gap-1.5
                   rounded-lg
                   bg-[#f7f0e5]
                   px-3
