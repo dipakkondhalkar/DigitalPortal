@@ -14,15 +14,18 @@ export default function ViewCardModal({ card, onClose }) {
   const qrRef = useRef(null);
 
   const [copied, setCopied] = useState(false);
+  const [downloading, setDownloading] = useState(false);
+  const [sharing, setSharing] = useState(false);
 
   if (!card) return null;
 
   /* =========================================================
-     CARD URL
+     ORIGINAL WORKING CARD URL
 
-     KEEP THE ORIGINAL WORKING URL.
+     DO NOT CHANGE THIS URL SYSTEM.
 
      Example:
+
      https://digital-portal-orcin.vercel.app/card/
      sdfgsdf-1791317604468?data=...
 
@@ -39,56 +42,64 @@ export default function ViewCardModal({ card, onClose }) {
     return (
       card.fullName
         ?.trim()
-        .replace(/[^a-zA-Z0-9]/g, "-")
+        .replace(/[^a-zA-Z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
         .toLowerCase() || "business-card"
     );
   };
 
   /* =========================================================
-     CREATE QR PNG
+     CREATE QR IMAGE
 
-     IMPORTANT:
-     - Uses the SAME QR shown in preview
-     - Keeps AARYANS GROUP branding
-     - Creates a square PNG
-     - Keeps QR centered
-     - Adds proper white margin
+     The downloaded/shared PNG is generated from
+     the SAME QR URL shown in Preview.
+
+     Final image:
+     1200 x 1200
+
+     QR:
+     - centered
+     - equal margins
+     - Aaryans branding
+     - white background
      ========================================================= */
 
   const createQRImage = async () => {
     const qrContainer = qrRef.current;
 
     if (!qrContainer) {
-      throw new Error("QR code not found");
+      throw new Error("QR container not found.");
     }
 
     const svg = qrContainer.querySelector("svg");
 
     if (!svg) {
-      throw new Error("QR SVG not found");
+      throw new Error("QR SVG not found.");
     }
 
-    const serializer = new XMLSerializer();
+    /* -------------------------------------------------------
+       Clone displayed QR
+       ------------------------------------------------------- */
 
     const clonedSvg = svg.cloneNode(true);
 
-    /*
-      Remove CSS-dependent sizing.
-
-      This makes the downloaded image independent
-      from the preview container.
-    */
     clonedSvg.removeAttribute("class");
 
+    clonedSvg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+
+    const viewBox = clonedSvg.getAttribute("viewBox") || "0 0 250 250";
+
+    clonedSvg.setAttribute("viewBox", viewBox);
+
     clonedSvg.setAttribute("width", "1000");
+
     clonedSvg.setAttribute("height", "1000");
 
-    clonedSvg.setAttribute(
-      "viewBox",
-      clonedSvg.getAttribute("viewBox") || "0 0 245 245",
-    );
+    /* -------------------------------------------------------
+       SVG → Blob
+       ------------------------------------------------------- */
 
-    clonedSvg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    const serializer = new XMLSerializer();
 
     const svgData = serializer.serializeToString(clonedSvg);
 
@@ -104,13 +115,12 @@ export default function ViewCardModal({ card, onClose }) {
       await new Promise((resolve, reject) => {
         image.onload = resolve;
         image.onerror = reject;
-
         image.src = svgUrl;
       });
 
-      /* =====================================================
-         FINAL IMAGE SIZE
-         ===================================================== */
+      /* -----------------------------------------------------
+         CANVAS
+         ----------------------------------------------------- */
 
       const size = 1200;
 
@@ -122,46 +132,45 @@ export default function ViewCardModal({ card, onClose }) {
       const context = canvas.getContext("2d");
 
       if (!context) {
-        throw new Error("Canvas is not supported");
+        throw new Error("Canvas is not supported.");
       }
 
-      /* =====================================================
+      /* -----------------------------------------------------
          WHITE BACKGROUND
-         ===================================================== */
+         ----------------------------------------------------- */
 
       context.fillStyle = "#ffffff";
 
       context.fillRect(0, 0, size, size);
 
-      /* =====================================================
-         QR AREA
+      /* -----------------------------------------------------
+         QR
 
-         Keep equal spacing on every side.
-         ===================================================== */
+         Equal margin on every side.
+         ----------------------------------------------------- */
 
       const qrSize = 1080;
 
       const qrX = (size - qrSize) / 2;
+
       const qrY = (size - qrSize) / 2;
+
+      context.imageSmoothingEnabled = false;
 
       context.drawImage(image, qrX, qrY, qrSize, qrSize);
 
-      /* =====================================================
+      /* -----------------------------------------------------
          CENTER BRANDING
-
-         SAME branding as Preview.
-         ===================================================== */
+         ----------------------------------------------------- */
 
       const centerWidth = 430;
       const centerHeight = 155;
 
       const centerX = (size - centerWidth) / 2;
+
       const centerY = (size - centerHeight) / 2;
 
-      /*
-        White background behind logo/text
-        so QR remains easily scannable.
-      */
+      /* White branding background */
 
       context.fillStyle = "#ffffff";
 
@@ -171,9 +180,9 @@ export default function ViewCardModal({ card, onClose }) {
 
       context.fill();
 
-      /* =====================================================
-         COMPANY NAME
-         ===================================================== */
+      /* -----------------------------------------------------
+         AARYANS GROUP
+         ----------------------------------------------------- */
 
       context.textAlign = "center";
       context.textBaseline = "middle";
@@ -184,9 +193,9 @@ export default function ViewCardModal({ card, onClose }) {
 
       context.fillText("AARYANS GROUP", size / 2, centerY + 40);
 
-      /* =====================================================
-         COMPANY TYPE
-         ===================================================== */
+      /* -----------------------------------------------------
+         OF COMPANIES
+         ----------------------------------------------------- */
 
       context.fillStyle = "#475569";
 
@@ -194,9 +203,9 @@ export default function ViewCardModal({ card, onClose }) {
 
       context.fillText("OF COMPANIES", size / 2, centerY + 77);
 
-      /* =====================================================
+      /* -----------------------------------------------------
          WEBSITE
-         ===================================================== */
+         ----------------------------------------------------- */
 
       context.fillStyle = "#601D1E";
 
@@ -204,16 +213,16 @@ export default function ViewCardModal({ card, onClose }) {
 
       context.fillText("www.aaryans.group", size / 2, centerY + 113);
 
-      /* =====================================================
-         CREATE PNG
-         ===================================================== */
+      /* -----------------------------------------------------
+         PNG
+         ----------------------------------------------------- */
 
       const pngBlob = await new Promise((resolve) => {
         canvas.toBlob(resolve, "image/png", 1);
       });
 
       if (!pngBlob) {
-        throw new Error("Could not create PNG");
+        throw new Error("Could not create QR PNG.");
       }
 
       return pngBlob;
@@ -227,7 +236,11 @@ export default function ViewCardModal({ card, onClose }) {
      ========================================================= */
 
   const handleDownloadQR = async () => {
+    if (downloading) return;
+
     try {
+      setDownloading(true);
+
       const pngBlob = await createQRImage();
 
       const url = URL.createObjectURL(pngBlob);
@@ -244,39 +257,47 @@ export default function ViewCardModal({ card, onClose }) {
 
       document.body.removeChild(link);
 
-      URL.revokeObjectURL(url);
+      setTimeout(() => {
+        URL.revokeObjectURL(url);
+      }, 1000);
     } catch (error) {
       console.error("QR download failed:", error);
 
       alert("Unable to download QR code.");
+    } finally {
+      setDownloading(false);
     }
   };
 
   /* =========================================================
-     SHARE QR IMAGE
+     SHARE QR
 
-     IMPORTANT:
-     Share the ACTUAL PNG file.
-
-     NOT the long URL.
+     Actual PNG image is shared.
 
      Message:
+
      QR code for Dipak Kondhalkar Digit Card.
      ========================================================= */
 
   const handleShare = async () => {
+    if (sharing) return;
+
     try {
+      setSharing(true);
+
       const pngBlob = await createQRImage();
 
       const file = new File([pngBlob], `${getSafeFileName()}-qr.png`, {
         type: "image/png",
       });
 
-      const shareMessage = `QR code for ${card.fullName || "Business"} Digit Card.`;
+      const shareMessage = `QR code for ${
+        card.fullName || "Business"
+      } Digit Card.`;
 
-      /* =====================================================
-         MOBILE / SUPPORTED BROWSER
-         ===================================================== */
+      /* -----------------------------------------------------
+         SHARE ACTUAL IMAGE
+         ----------------------------------------------------- */
 
       if (
         navigator.share &&
@@ -294,12 +315,9 @@ export default function ViewCardModal({ card, onClose }) {
         return;
       }
 
-      /* =====================================================
-         FALLBACK
-
-         If browser cannot share image files,
-         download the actual QR image.
-         ===================================================== */
+      /* -----------------------------------------------------
+         FALLBACK DOWNLOAD
+         ----------------------------------------------------- */
 
       const url = URL.createObjectURL(pngBlob);
 
@@ -315,7 +333,9 @@ export default function ViewCardModal({ card, onClose }) {
 
       document.body.removeChild(link);
 
-      URL.revokeObjectURL(url);
+      setTimeout(() => {
+        URL.revokeObjectURL(url);
+      }, 1000);
 
       alert(
         "Image sharing is not supported by this browser. The QR image has been downloaded instead.",
@@ -328,6 +348,8 @@ export default function ViewCardModal({ card, onClose }) {
       console.error("QR sharing failed:", error);
 
       alert("Unable to share QR code.");
+    } finally {
+      setSharing(false);
     }
   };
 
@@ -396,7 +418,7 @@ export default function ViewCardModal({ card, onClose }) {
             absolute
             right-4
             top-4
-            z-10
+            z-20
             flex
             h-10
             w-10
@@ -407,7 +429,7 @@ export default function ViewCardModal({ card, onClose }) {
             border-slate-200
             bg-white
             text-slate-500
-            shadow-sm
+            shadow-md
             transition
             hover:bg-slate-100
             hover:text-slate-800
@@ -448,7 +470,7 @@ export default function ViewCardModal({ card, onClose }) {
               text-slate-500
             "
           >
-            Preview the card and share it using the QR code.
+            Preview your digital card and QR code before sharing.
           </p>
         </div>
 
@@ -567,14 +589,14 @@ export default function ViewCardModal({ card, onClose }) {
                   className="
                     relative
                     flex
-                    h-full
-                    w-full
+                    h-[250px]
+                    w-[250px]
                     items-center
                     justify-center
                   "
                 >
                   {/* =======================================
-                      SAME QR CODE
+                      QR CODE
                       ======================================= */}
 
                   <QRCodeSVG
@@ -584,11 +606,10 @@ export default function ViewCardModal({ card, onClose }) {
                     includeMargin={true}
                     bgColor="#ffffff"
                     fgColor="#601D1E"
-                    className="block"
                   />
 
                   {/* =======================================
-                      CENTER BRANDING
+                      AARYANS CENTER BRANDING
                       ======================================= */}
 
                   <div
@@ -651,7 +672,7 @@ export default function ViewCardModal({ card, onClose }) {
               </div>
 
               {/* =============================================
-                  QR INFORMATION
+                  DESCRIPTION
                   ============================================= */}
 
               <p
@@ -677,9 +698,12 @@ export default function ViewCardModal({ card, onClose }) {
                   gap-3
                 "
               >
+                {/* DOWNLOAD */}
+
                 <button
                   type="button"
                   onClick={handleDownloadQR}
+                  disabled={downloading}
                   className="
                     flex
                     items-center
@@ -697,15 +721,21 @@ export default function ViewCardModal({ card, onClose }) {
                     hover:bg-[#491719]
                     hover:shadow-md
                     active:scale-95
+                    disabled:cursor-not-allowed
+                    disabled:opacity-60
                   "
                 >
                   <Download className="h-4 w-4" />
-                  Download
+
+                  {downloading ? "Downloading..." : "Download"}
                 </button>
+
+                {/* SHARE */}
 
                 <button
                   type="button"
                   onClick={handleShare}
+                  disabled={sharing}
                   className="
                     flex
                     items-center
@@ -724,10 +754,13 @@ export default function ViewCardModal({ card, onClose }) {
                     hover:bg-[#601D1E]/10
                     hover:shadow-sm
                     active:scale-95
+                    disabled:cursor-not-allowed
+                    disabled:opacity-60
                   "
                 >
                   <Share2 className="h-4 w-4" />
-                  Share
+
+                  {sharing ? "Sharing..." : "Share"}
                 </button>
               </div>
 
