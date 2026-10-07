@@ -185,11 +185,28 @@ export default function PublicCardView() {
       <div className="mx-auto flex max-w-xl flex-col items-center">
         <BusinessCard card={card} />
 
-        <div className="mt-6 text-center">
+        {/* =================================================
+            SMALL SAVE CONTACT BUTTON
+            ================================================= */}
+
+        <div className="mt-4 text-center">
           <button
             type="button"
             onClick={() => downloadVCard(card)}
-            className="rounded-full bg-[#E2BA6E] px-7 py-3 font-bold text-[#5B1B20] shadow-lg transition hover:bg-[#d4a94f]"
+            className="
+              rounded-full
+              bg-[#E2BA6E]
+              px-4
+              py-1.5
+              text-[11px]
+              font-bold
+              text-[#5B1B20]
+              shadow-md
+              transition
+              hover:bg-[#d4a94f]
+              hover:shadow-lg
+              active:scale-95
+            "
           >
             Save Contact
           </button>
