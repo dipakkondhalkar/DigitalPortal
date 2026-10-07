@@ -5,9 +5,24 @@ import { Download, Share2 } from "lucide-react";
 import BusinessCard from "../components/BusinessCard";
 import { downloadVCard } from "../utils/card";
 import { STORAGE_KEYS } from "../config";
+import aaryansLogo from "../assets/image.png";
 
 /* =========================================================
    PUBLIC CARD PAGE
+
+   Supports:
+   /card/dipakkondhalkar
+   /card/old-card-id
+   /card/id?data=...
+
+   Buttons:
+   - Download Card
+   - Share
+   - Save Contact
+   ========================================================= */
+
+/* =========================================================
+   CREATE NAME SLUG
    ========================================================= */
 
 const createNameSlug = (name) => {
@@ -15,6 +30,19 @@ const createNameSlug = (name) => {
     .trim()
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "");
+};
+
+/* =========================================================
+   ESCAPE HTML
+   ========================================================= */
+
+const escapeHtml = (value) => {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 };
 
 export default function PublicCardView() {
@@ -49,6 +77,16 @@ export default function PublicCardView() {
             const qrId = String(qrCard.id || "");
             const qrNameSlug = createNameSlug(qrCard.fullName);
 
+            /*
+              Accept:
+
+              /card/original-id
+
+              OR
+
+              /card/dipakkondhalkar
+            */
+
             if (
               qrId === String(id) ||
               qrNameSlug === String(id).toLowerCase()
@@ -57,6 +95,8 @@ export default function PublicCardView() {
               setLoading(false);
               return;
             }
+
+            console.warn("QR card does not match the URL.");
           }
         } catch (qrError) {
           console.error("QR data JSON error:", qrError);
@@ -78,7 +118,16 @@ export default function PublicCardView() {
 
             const localCard = localCards.find((item) => {
               const originalId = String(item.id || "").toLowerCase();
+
               const nameSlug = createNameSlug(item.fullName);
+
+              /*
+                Support both:
+
+                /card/old-card-id
+
+                /card/dipakkondhalkar
+              */
 
               return originalId === requestedId || nameSlug === requestedId;
             });
@@ -94,6 +143,10 @@ export default function PublicCardView() {
         console.error("Local card read error:", storageError);
       }
 
+      /* =====================================================
+         3. CARD NOT FOUND
+         ===================================================== */
+
       setError("Card Not Found");
       setLoading(false);
     } catch (err) {
@@ -107,23 +160,70 @@ export default function PublicCardView() {
   /* =========================================================
      DOWNLOAD CARD
      
-     No external package required.
-     Downloads ONLY the card information as a standalone
-     HTML card file. Buttons are NOT included.
+     No html2canvas.
+     
+     The logo is converted to Base64 and embedded directly
+     inside the downloaded HTML file.
      ========================================================= */
 
-  const handleDownloadCard = () => {
+  const handleDownloadCard = async () => {
     if (!card) return;
 
-    const cardHtml = `
+    try {
+      /* =====================================================
+         GET LOGO
+         ===================================================== */
+
+      const response = await fetch(aaryansLogo);
+
+      if (!response.ok) {
+        throw new Error("Unable to load Aaryans logo.");
+      }
+
+      const logoBlob = await response.blob();
+
+      /* =====================================================
+         CONVERT LOGO TO BASE64
+         ===================================================== */
+
+      const logoBase64 = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.onloadend = () => {
+          resolve(reader.result);
+        };
+
+        reader.onerror = () => {
+          reject(new Error("Unable to convert logo."));
+        };
+
+        reader.readAsDataURL(logoBlob);
+      });
+
+      /* =====================================================
+         CREATE DOWNLOADABLE CARD HTML
+         ===================================================== */
+
+      const cardHtml = `
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${card.fullName || "Business Card"}</title>
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    ${escapeHtml(card.fullName || "Business Card")}
+  </title>
 
   <style>
+
     * {
       box-sizing: border-box;
     }
@@ -131,204 +231,410 @@ export default function PublicCardView() {
     body {
       margin: 0;
       padding: 30px;
+
       background: #f7f0e5;
-      font-family: Arial, Helvetica, sans-serif;
+
+      font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
       display: flex;
       justify-content: center;
       align-items: flex-start;
     }
 
+    /* =====================================================
+       BUSINESS CARD
+       ===================================================== */
+
     .card {
+
       width: 330px;
+
       overflow: hidden;
+
       border-radius: 20px;
+
       border: 1px solid #ded5ca;
+
       background: #faf8f4;
-      box-shadow: 0 18px 45px rgba(59, 24, 26, 0.18);
+
+      box-shadow:
+        0 18px 45px
+        rgba(59, 24, 26, 0.18);
     }
 
+    /* =====================================================
+       TOP SECTION
+       ===================================================== */
+
     .top {
+
       background: #681F22;
-      padding: 25px 18px 24px;
+
+      padding:
+        25px
+        18px
+        24px;
+
       text-align: center;
     }
 
+    /* =====================================================
+       LOGO
+       ===================================================== */
+
     .logo {
-      max-width: 170px;
-      max-height: 70px;
+
+      width: auto;
+
+      max-width: 180px;
+
+      height: 70px;
+
       object-fit: contain;
-      margin-bottom: 8px;
+
+      display: block;
+
+      margin:
+        0 auto 8px;
     }
 
+    /* =====================================================
+       COMPANY NAME
+       ===================================================== */
+
     .company {
+
       color: #E2BA6E;
+
       font-size: 13px;
+
       font-weight: bold;
     }
 
+    /* =====================================================
+       GOLD DIVIDER
+       ===================================================== */
+
     .divider {
+
       width: 50px;
+
       height: 2px;
+
       background: #E2BA6E;
-      margin: 14px auto;
+
+      margin:
+        14px
+        auto;
     }
+
+    /* =====================================================
+       NAME BOX
+       ===================================================== */
 
     .name-box {
+
       background: white;
+
       border-radius: 16px;
-      padding: 22px 15px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.18);
+
+      padding:
+        22px
+        15px;
+
+      text-align: center;
+
+      box-shadow:
+        0 10px 25px
+        rgba(0, 0, 0, 0.18);
     }
 
+    /* =====================================================
+       NAME
+       ===================================================== */
+
     .name {
+
       color: #681F22;
+
       font-size: 21px;
+
       font-weight: 800;
+
       text-transform: uppercase;
+
       line-height: 1.2;
+
       word-break: break-word;
     }
 
+    /* =====================================================
+       SMALL GOLD LINE
+       ===================================================== */
+
     .small-line {
+
       width: 40px;
+
       height: 2px;
+
       background: #E2BA6E;
-      margin: 12px auto 8px;
+
+      margin:
+        12px
+        auto
+        8px;
     }
 
+    /* =====================================================
+       DESIGNATION
+       ===================================================== */
+
     .title {
+
       color: #4A4A4A;
+
       font-size: 14px;
     }
 
+    /* =====================================================
+       CONTACT SECTION
+       ===================================================== */
+
     .details {
+
       background: #FAF8F5;
-      padding: 22px 18px;
+
+      padding:
+        22px
+        18px;
     }
 
+    /* =====================================================
+       CONTACT ROW
+       ===================================================== */
+
     .detail {
+
       display: flex;
+
       gap: 10px;
+
       margin-bottom: 15px;
-      color: #444;
+
+      color: #444444;
+
       font-size: 12px;
+
       line-height: 1.5;
     }
 
+    /* =====================================================
+       CONTACT ICON
+       ===================================================== */
+
     .icon {
+
       width: 28px;
+
       height: 28px;
+
       min-width: 28px;
+
       border-radius: 8px;
+
       background: #681F22;
+
       color: #E2BA6E;
+
       display: flex;
+
       align-items: center;
+
       justify-content: center;
+
       font-size: 13px;
     }
 
+    /* =====================================================
+       CONTACT TEXT
+       ===================================================== */
+
     .value {
+
       word-break: break-word;
+
       padding-top: 5px;
     }
 
+    /* =====================================================
+       BOTTOM LINE
+       ===================================================== */
+
     .bottom-line {
+
       height: 1px;
+
       background: #ddd3c8;
+
       margin-top: 18px;
     }
 
+    /* =====================================================
+       BRAND FOOTER
+       ===================================================== */
+
     .brand {
+
       background: #681F22;
+
       color: #E2BA6E;
+
       text-align: center;
+
       padding: 10px;
+
       font-size: 8px;
+
       font-weight: bold;
+
       letter-spacing: 2px;
+
       text-transform: uppercase;
     }
+
   </style>
+
 </head>
 
 <body>
 
+  <!-- =====================================================
+       ONLY BUSINESS CARD
+       ===================================================== -->
+
   <div class="card">
+
+    <!-- TOP -->
 
     <div class="top">
 
+      <!-- AARYANS LOGO -->
+
       <img
         class="logo"
-        src="${window.location.origin}/src/assets/image.png"
+        src="${logoBase64}"
         alt="Aaryans"
       />
+
+      <!-- COMPANY NAME -->
 
       <div class="company">
         Aaryans Group of Companies
       </div>
 
+      <!-- GOLD DIVIDER -->
+
       <div class="divider"></div>
+
+      <!-- NAME -->
 
       <div class="name-box">
 
         <div class="name">
-          ${escapeHtml(card.fullName || "")}
+          ${escapeHtml(card.fullName)}
         </div>
 
         <div class="small-line"></div>
 
         <div class="title">
-          ${escapeHtml(card.title || "")}
+          ${escapeHtml(card.title)}
         </div>
 
       </div>
 
     </div>
+
+    <!-- CONTACT DETAILS -->
 
     <div class="details">
 
       ${
         card.email
           ? `
-        <div class="detail">
-          <div class="icon">✉</div>
-          <div class="value">${escapeHtml(card.email)}</div>
-        </div>
-      `
+            <div class="detail">
+
+              <div class="icon">
+                ✉
+              </div>
+
+              <div class="value">
+                ${escapeHtml(card.email)}
+              </div>
+
+            </div>
+          `
           : ""
       }
 
       ${
         card.phone
           ? `
-        <div class="detail">
-          <div class="icon">☎</div>
-          <div class="value">+91 ${escapeHtml(card.phone)}</div>
-        </div>
-      `
+            <div class="detail">
+
+              <div class="icon">
+                ☎
+              </div>
+
+              <div class="value">
+                +91 ${escapeHtml(card.phone)}
+              </div>
+
+            </div>
+          `
           : ""
       }
 
       ${
         card.address
           ? `
-        <div class="detail">
-          <div class="icon">●</div>
-          <div class="value">${escapeHtml(card.address)}</div>
-        </div>
-      `
+            <div class="detail">
+
+              <div class="icon">
+                ●
+              </div>
+
+              <div class="value">
+                ${escapeHtml(card.address)}
+              </div>
+
+            </div>
+          `
           : ""
       }
 
+      <!-- WEBSITE -->
+
       <div class="detail">
-        <div class="icon">🌐</div>
-        <div class="value">www.aaryans.group</div>
+
+        <div class="icon">
+          🌐
+        </div>
+
+        <div class="value">
+          www.aaryans.group
+        </div>
+
       </div>
 
       <div class="bottom-line"></div>
 
     </div>
+
+    <!-- BRAND -->
 
     <div class="brand">
       Aaryans Group of Companies
@@ -337,42 +643,50 @@ export default function PublicCardView() {
   </div>
 
 </body>
+
 </html>
 `;
 
-    const blob = new Blob([cardHtml], {
-      type: "text/html;charset=utf-8",
-    });
+      /* =====================================================
+         CREATE FILE
+         ===================================================== */
 
-    const url = URL.createObjectURL(blob);
+      const blob = new Blob([cardHtml], {
+        type: "text/html;charset=utf-8",
+      });
 
-    const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
 
-    const fileName = `${card.fullName || "business-card"}`
-      .trim()
-      .replace(/[^a-zA-Z0-9]+/g, "-");
+      /* =====================================================
+         FILE NAME
+         ===================================================== */
 
-    link.href = url;
-    link.download = `${fileName}-business-card.html`;
+      const fileName = `${card.fullName || "business-card"}`
+        .trim()
+        .replace(/[^a-zA-Z0-9]+/g, "-");
 
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+      /* =====================================================
+         DOWNLOAD
+         ===================================================== */
 
-    URL.revokeObjectURL(url);
-  };
+      const link = document.createElement("a");
 
-  /* =========================================================
-     ESCAPE HTML
-     ========================================================= */
+      link.href = url;
 
-  const escapeHtml = (value) => {
-    return String(value)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
+      link.download = `${fileName}-business-card.html`;
+
+      document.body.appendChild(link);
+
+      link.click();
+
+      document.body.removeChild(link);
+
+      URL.revokeObjectURL(url);
+    } catch (downloadError) {
+      console.error("Card download error:", downloadError);
+
+      alert("Unable to download the business card. Please try again.");
+    }
   };
 
   /* =========================================================
@@ -385,20 +699,57 @@ export default function PublicCardView() {
     const shareUrl = window.location.href;
 
     try {
+      /* =====================================================
+         MOBILE / BROWSER SHARE
+         ===================================================== */
+
       if (navigator.share) {
         await navigator.share({
-          title: `${card.fullName} - Aaryans Group`,
+          title: `${card.fullName} - Aaryans Group of Companies`,
+
           text: `${card.fullName} - ${card.title || "Business Card"}`,
+
           url: shareUrl,
         });
 
         return;
       }
 
-      await navigator.clipboard.writeText(shareUrl);
+      /* =====================================================
+         FALLBACK COPY
+         ===================================================== */
+
+      if (navigator.clipboard) {
+        await navigator.clipboard.writeText(shareUrl);
+
+        alert("Business card link copied.");
+
+        return;
+      }
+
+      /* =====================================================
+         OLD BROWSER FALLBACK
+         ===================================================== */
+
+      const temporaryInput = document.createElement("input");
+
+      temporaryInput.value = shareUrl;
+
+      document.body.appendChild(temporaryInput);
+
+      temporaryInput.select();
+
+      document.execCommand("copy");
+
+      document.body.removeChild(temporaryInput);
 
       alert("Business card link copied.");
     } catch (shareError) {
+      /*
+        User may close/cancel the native
+        sharing popup. Do not show an error.
+      */
+
       if (shareError?.name !== "AbortError") {
         console.error("Share error:", shareError);
       }
@@ -406,16 +757,53 @@ export default function PublicCardView() {
   };
 
   /* =========================================================
-     LOADING
+     LOADING SCREEN
      ========================================================= */
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#f7f0e5] px-5">
-        <div className="w-full max-w-xl rounded-[35px] bg-white p-10 text-center shadow-xl">
-          <div className="mx-auto mb-5 h-12 w-12 animate-spin rounded-full border-4 border-[#E2BA6E] border-t-[#5B1B20]" />
+      <div
+        className="
+          flex
+          min-h-screen
+          items-center
+          justify-center
+          bg-[#f7f0e5]
+          px-5
+        "
+      >
+        <div
+          className="
+            w-full
+            max-w-xl
+            rounded-[35px]
+            bg-white
+            p-10
+            text-center
+            shadow-xl
+          "
+        >
+          <div
+            className="
+              mx-auto
+              mb-5
+              h-12
+              w-12
+              animate-spin
+              rounded-full
+              border-4
+              border-[#E2BA6E]
+              border-t-[#5B1B20]
+            "
+          />
 
-          <h1 className="text-xl font-bold text-[#321b1e]">
+          <h1
+            className="
+              text-xl
+              font-bold
+              text-[#321b1e]
+            "
+          >
             Loading Business Card...
           </h1>
         </div>
@@ -429,11 +817,37 @@ export default function PublicCardView() {
 
   if (error || !card) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#f7f0e5] px-5">
-        <div className="w-full max-w-xl rounded-[35px] bg-white p-10 text-center shadow-xl">
+      <div
+        className="
+          flex
+          min-h-screen
+          items-center
+          justify-center
+          bg-[#f7f0e5]
+          px-5
+        "
+      >
+        <div
+          className="
+            w-full
+            max-w-xl
+            rounded-[35px]
+            bg-white
+            p-10
+            text-center
+            shadow-xl
+          "
+        >
           <div className="mb-5 text-6xl">⚠️</div>
 
-          <h1 className="mb-4 text-3xl font-bold text-[#321b1e]">
+          <h1
+            className="
+              mb-4
+              text-3xl
+              font-bold
+              text-[#321b1e]
+            "
+          >
             Card Not Found
           </h1>
 
@@ -441,7 +855,13 @@ export default function PublicCardView() {
             This QR code does not contain a valid business card.
           </p>
 
-          <p className="mt-5 text-sm text-gray-400">
+          <p
+            className="
+              mt-5
+              text-sm
+              text-gray-400
+            "
+          >
             Please create a new QR code from the latest deployed website.
           </p>
 
@@ -468,25 +888,48 @@ export default function PublicCardView() {
   }
 
   /* =========================================================
-     DISPLAY BUSINESS CARD
+     PUBLIC BUSINESS CARD
      ========================================================= */
 
   return (
-    <div className="min-h-screen bg-[#f7f0e5] px-4 py-8">
-      <div className="mx-auto flex max-w-xl flex-col items-center">
-        {/* ================================================
-            ONLY BUSINESS CARD
-            ================================================ */}
+    <div
+      className="
+        min-h-screen
+        bg-[#f7f0e5]
+        px-4
+        py-8
+      "
+    >
+      <div
+        className="
+          mx-auto
+          flex
+          max-w-xl
+          flex-col
+          items-center
+        "
+      >
+        {/* =================================================
+            BUSINESS CARD
+            ================================================= */}
 
         <BusinessCard card={card} />
 
-        {/* ================================================
-            DOWNLOAD + SHARE BUTTONS
-            OUTSIDE THE CARD
-            ================================================ */}
+        {/* =================================================
+            DOWNLOAD + SHARE
+            OUTSIDE CARD
+            ================================================= */}
 
-        <div className="mt-4 flex items-center justify-center gap-2">
-          {/* DOWNLOAD */}
+        <div
+          className="
+            mt-4
+            flex
+            items-center
+            justify-center
+            gap-2
+          "
+        >
+          {/* DOWNLOAD CARD */}
 
           <button
             type="button"
@@ -494,6 +937,7 @@ export default function PublicCardView() {
             className="
               flex
               items-center
+              justify-center
               gap-1.5
               rounded-full
               bg-[#5B1B20]
@@ -521,6 +965,7 @@ export default function PublicCardView() {
             className="
               flex
               items-center
+              justify-center
               gap-1.5
               rounded-full
               border
@@ -543,12 +988,17 @@ export default function PublicCardView() {
           </button>
         </div>
 
-        {/* ================================================
+        {/* =================================================
             SAVE CONTACT
             BELOW DOWNLOAD + SHARE
-            ================================================ */}
+            ================================================= */}
 
-        <div className="mt-3 text-center">
+        <div
+          className="
+            mt-3
+            text-center
+          "
+        >
           <button
             type="button"
             onClick={() => downloadVCard(card)}
